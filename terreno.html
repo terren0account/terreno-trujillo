@@ -11,10 +11,8 @@
             background: #1a1a1a;
             color: #fff;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            display: grid;
+            place-items: center;
         }
 
         #map-container {
@@ -25,9 +23,7 @@
             border-radius: 8px;
             background: #000;
             box-shadow: 0 4px 6px #0003;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            touch-action: none; /* Mejora el rendimiento en dispositivos móviles */
         }
 
         #map {
@@ -172,9 +168,15 @@
             init() {
                 this.map.onload = () => this.setInitialState();
                 this.container.onmousedown = e => this.startDrag(e.clientX, e.clientY);
-                this.container.ontouchstart = e => this.startTouch(e);
+                this.container.ontouchstart = e => {
+                    e.preventDefault();  // Evitar el desplazamiento de la página
+                    this.startTouch(e);
+                };
                 this.container.onmousemove = e => this.drag(e.clientX, e.clientY);
-                this.container.ontouchmove = e => this.dragTouch(e);
+                this.container.ontouchmove = e => {
+                    e.preventDefault();  // Evitar el desplazamiento de la página
+                    this.dragTouch(e);
+                };
                 this.container.onwheel = e => this.handleZoom(e);
                 
                 ['mouseup', 'mouseleave', 'touchend'].forEach(event => 
@@ -300,7 +302,6 @@
             }
 
             reset() {
-                // Resetear a los valores iniciales
                 this.state.scale = this.state.initialScale;
                 this.state.x = this.state.initialX;
                 this.state.y = this.state.initialY;
@@ -320,10 +321,20 @@
                 document.getElementById('zoomIn').disabled = this.state.scale >= this.config.maxZoom;
                 document.getElementById('zoomOut').disabled = this.state.scale <= this.config.minZoom;
             }
+
+            moveMap(x, y) {
+                this.state.x += x;
+                this.state.y += y;
+                this.clampPosition();
+                this.updateTransform();
+            }
         }
 
         // Inicializar
-        new MapViewer('map-container');
+        const mapViewer = new MapViewer('map-container');
+
+        // Mover el mapa con código
+        mapViewer.moveMap(100, 0); // Ejemplo de movimiento
     </script>
 </body>
 </html>
