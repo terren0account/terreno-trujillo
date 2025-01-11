@@ -23,6 +23,9 @@
             border-radius: 8px;
             background: #000;
             box-shadow: 0 4px 6px #0003;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #map {
@@ -199,6 +202,7 @@
                 const container = this.container.getBoundingClientRect();
                 const map = this.map.getBoundingClientRect();
 
+                // Centramos el mapa en el contenedor
                 this.state.initialX = (container.width - map.width) / 2;
                 this.state.initialY = (container.height - map.height) / 2;
 
@@ -327,4 +331,3 @@
     </script>
 </body>
 </html>
-
