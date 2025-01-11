@@ -167,9 +167,15 @@
             init() {
                 this.map.onload = () => this.setInitialState();
                 this.container.onmousedown = e => this.startDrag(e.clientX, e.clientY);
-                this.container.ontouchstart = e => this.startTouch(e);
+                this.container.ontouchstart = e => {
+                    e.preventDefault();  // Evitar el desplazamiento de la página
+                    this.startTouch(e);
+                };
                 this.container.onmousemove = e => this.drag(e.clientX, e.clientY);
-                this.container.ontouchmove = e => this.dragTouch(e);
+                this.container.ontouchmove = e => {
+                    e.preventDefault();  // Evitar el desplazamiento de la página
+                    this.dragTouch(e);
+                };
                 this.container.onwheel = e => this.handleZoom(e);
                 
                 ['mouseup', 'mouseleave', 'touchend'].forEach(event => 
@@ -321,3 +327,4 @@
     </script>
 </body>
 </html>
+
