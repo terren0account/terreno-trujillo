@@ -11,8 +11,10 @@
             background: #1a1a1a;
             color: #fff;
             font-family: Arial, sans-serif;
-            display: grid;
-            place-items: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         #map-container {
@@ -170,15 +172,9 @@
             init() {
                 this.map.onload = () => this.setInitialState();
                 this.container.onmousedown = e => this.startDrag(e.clientX, e.clientY);
-                this.container.ontouchstart = e => {
-                    e.preventDefault();  // Evitar el desplazamiento de la página
-                    this.startTouch(e);
-                };
+                this.container.ontouchstart = e => this.startTouch(e);
                 this.container.onmousemove = e => this.drag(e.clientX, e.clientY);
-                this.container.ontouchmove = e => {
-                    e.preventDefault();  // Evitar el desplazamiento de la página
-                    this.dragTouch(e);
-                };
+                this.container.ontouchmove = e => this.dragTouch(e);
                 this.container.onwheel = e => this.handleZoom(e);
                 
                 ['mouseup', 'mouseleave', 'touchend'].forEach(event => 
@@ -202,7 +198,6 @@
                 const container = this.container.getBoundingClientRect();
                 const map = this.map.getBoundingClientRect();
 
-                // Centramos el mapa en el contenedor
                 this.state.initialX = (container.width - map.width) / 2;
                 this.state.initialY = (container.height - map.height) / 2;
 
@@ -305,6 +300,7 @@
             }
 
             reset() {
+                // Resetear a los valores iniciales
                 this.state.scale = this.state.initialScale;
                 this.state.x = this.state.initialX;
                 this.state.y = this.state.initialY;
