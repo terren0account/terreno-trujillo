@@ -136,7 +136,7 @@
                 <input type="range" id="zoomSlider" min="50" max="300" value="100">
                 <div id="zoomLevel">100%</div>
             </div>
-            <button id="reset" class="btn" disabled>Reset</button>
+            <button id="reset" class="btn">Reset</button>
         </div>
 
         <div id="info" class="panel">
@@ -154,6 +154,7 @@
                 this.map = this.container.querySelector('img');
                 this.zoomLevel = document.getElementById('zoomLevel');
                 this.zoomSlider = document.getElementById('zoomSlider');
+                this.resetButton = document.getElementById('reset');
 
                 this.state = {
                     scale: 1,
@@ -200,6 +201,9 @@
 
                 // Botón "Ir a Inicio"
                 document.getElementById('goHome').onclick = () => window.location.href = 'index.html';
+
+                // Habilitar el botón de reset
+                this.resetButton.onclick = () => this.reset();
             }
 
             setInitialState() {
