@@ -3,143 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Interactivo SVG</title>
+    <title>Mapa Interactivo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <style>
-        body {
-            margin: 0;
+        /* Estilo para centrar y asegurar que el contenedor no tenga scroll */
+        #map-container {
+            width: 100%;
             height: 100vh;
-            background: #1a1a1a;
-            color: white;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        #map-container {
-            width: 90vw;
-            height: 90vh;
-            border: 2px solid #2196F3;
-            border-radius: 8px;
-            background: #000;
-            overflow: hidden;
+            background-color: #f0f0f0;
         }
 
         svg {
-            width: 100%;
+            display: block;
+            width: auto;
             height: 100%;
-            cursor: grab;
-        }
-
-        svg:active {
-            cursor: grabbing;
-        }
-
-        .controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 12px;
-            border: 1px solid #fff;
-            color: white;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .btn:hover {
-            background: white;
-            color: black;
+            max-width: 100%;
+            max-height: 100%;
         }
     </style>
 </head>
 <body>
     <div id="map-container">
-        <svg id="map" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
-            <!-- Tu contenido SVG aquí -->
-            <rect x="0" y="0" width="1000" height="1000" fill="lightblue"></rect>
-            <circle cx="500" cy="500" r="200" fill="orange"></circle>
-        </svg>
-    </div>
-    <div class="controls">
-        <button id="zoomIn" class="btn">Zoom In</button>
-        <button id="zoomOut" class="btn">Zoom Out</button>
-        <button id="reset" class="btn">Reset</button>
+        <!-- Aquí cargamos el mapa SVG -->
+        <object id="map" type="image/svg+xml" data="mapa.svg"></object>
     </div>
 
     <script>
-        const svg = document.getElementById('map');
-        const container = document.getElementById('map-container');
-        const zoomInBtn = document.getElementById('zoomIn');
-        const zoomOutBtn = document.getElementById('zoomOut');
-        const resetBtn = document.getElementById('reset');
+        document.addEventListener("DOMContentLoaded", () => {
+            const mapObject = document.getElementById("map");
 
-        let viewBox = { x: 0, y: 0, width: 1000, height: 1000 }; // Valores iniciales del viewBox
-        const zoomFactor = 0.1; // Factor de zoom
-        const panSpeed = 1.5; // Velocidad de arrastre
-        let isPanning = false;
-        let startX, startY;
+            // Esperamos a que el mapa SVG se cargue
+            mapObject.addEventListener("load", () => {
+                const svgDoc = mapObject.contentDocument; // Accede al contenido interno del SVG
+                const svgElement = svgDoc.querySelector("svg"); // Selecciona el elemento raíz <svg>
 
-        // Actualizar el atributo viewBox en el SVG
-        function updateViewBox() {
-            svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
-        }
-
-        // Zoom in
-        zoomInBtn.addEventListener('click', () => {
-            viewBox.width *= 1 - zoomFactor;
-            viewBox.height *= 1 - zoomFactor;
-            updateViewBox();
-        });
-
-        // Zoom out
-        zoomOutBtn.addEventListener('click', () => {
-            viewBox.width *= 1 + zoomFactor;
-            viewBox.height *= 1 + zoomFactor;
-            updateViewBox();
-        });
-
-        // Reset
-        resetBtn.addEventListener('click', () => {
-            viewBox = { x: 0, y: 0, width: 1000, height: 1000 };
-            updateViewBox();
-        });
-
-        // Arrastre (pan)
-        svg.addEventListener('mousedown', (e) => {
-            isPanning = true;
-            startX = e.clientX;
-            startY = e.clientY;
-        });
-
-        svg.addEventListener('mousemove', (e) => {
-            if (!isPanning) return;
-            const dx = (startX - e.clientX) * (viewBox.width / container.offsetWidth) * panSpeed;
-            const dy = (startY - e.clientY) * (viewBox.height / container.offsetHeight) * panSpeed;
-            viewBox.x += dx;
-            viewBox.y += dy;
-            startX = e.clientX;
-            startY = e.clientY;
-            updateViewBox();
-        });
-
-        svg.addEventListener('mouseup', () => (isPanning = false));
-        svg.addEventListener('mouseleave', () => (isPanning = false));
-
-        // Evitar comportamiento predeterminado del scroll
-        container.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const zoomDirection = e.deltaY < 0 ? -zoomFactor : zoomFactor;
-            viewBox.width *= 1 + zoomDirection;
-            viewBox.height *= 1 + zoomDirection;
-            updateViewBox();
+                // Aplica Panzoom al elemento SVG
+                Panzoom(svgElement, {
+                    maxScale: 5, // Zoom máximo
+                    minScale: 0.5, // Zoom mínimo
+                    contain: "outside", // Permitir mover fuera del contenedor
+                });
+            });
         });
     </script>
 </body>
