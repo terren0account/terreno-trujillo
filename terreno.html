@@ -16,7 +16,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden; /* Evitar desplazamiento no deseado */
+            flex-direction: column; /* Alineación vertical */
         }
 
         /* Contenedor principal */
@@ -40,7 +40,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             background-color: #fff;
             transition: all 0.3s ease-in-out;
-            touch-action: none; /* Permitir el desplazamiento táctil */
         }
 
         /* Imagen del mapa */
@@ -160,36 +159,35 @@
 
             .info-text {
                 font-size: 18px;
-                margin-top: 20px;
+                margin-top: 40px;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Panel de control (a la derecha) -->
-    <div class="control-panel">
-        <div class="panel-title">Controles</div>
-        
-        <!-- Botón de redirección -->
-        <a href="index.html">
-            <button class="btn back-btn">Volver a la página principal</button>
-        </a>
+<!-- Panel de control (a la parte superior en móvil) -->
+<div class="control-panel">
+    <div class="panel-title">Controles</div>
+    
+    <!-- Botón de redirección -->
+    <a href="index.html">
+        <button class="btn back-btn">Volver a la página principal</button>
+    </a>
 
-        <!-- Botón de reset -->
-        <button class="btn reset-btn" id="reset-btn">Resetear</button>
+    <!-- Botón de reset -->
+    <button class="btn reset-btn" id="reset-btn">Resetear</button>
 
-        <!-- Barra deslizadora de zoom -->
-        <div class="zoom-slider-container">
-            <label for="zoom-slider" class="zoom-label">Ajustar Zoom</label>
-            <input type="range" id="zoom-slider" class="zoom-slider" min="0.5" max="10" step="0.1" value="1">
-        </div>
+    <!-- Barra deslizadora de zoom -->
+    <div class="zoom-slider-container">
+        <label for="zoom-slider" class="zoom-label">Ajustar Zoom</label>
+        <input type="range" id="zoom-slider" class="zoom-slider" min="0.5" max="10" step="0.1" value="1">
     </div>
+</div>
 
-    <!-- Contenedor del mapa -->
+<!-- Contenedor del mapa -->
+<div class="container">
     <div id="map-container">
-        <!-- Usamos <img> para cargar el archivo SVG -->
         <img id="map" src="mapa.svg" alt="Mapa SVG">
     </div>
 </div>
@@ -209,42 +207,20 @@
     let startX, startY, isDragging = false;
     let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
 
-    // Función para manejar el movimiento táctil
-    const handleTouchStart = (e) => {
-        e.preventDefault();
-        isDragging = true;
-        startX = e.touches[0].pageX - offsetX;
-        startY = e.touches[0].pageY - offsetY;
-        mapContainer.style.cursor = 'grabbing';
-    };
-
-    const handleTouchMove = (e) => {
-        if (isDragging) {
-            const dx = e.touches[0].pageX - startX;
-            const dy = e.touches[0].pageY - startY;
-            offsetX = dx;
-            offsetY = dy;
-            map.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-        }
-    };
-
-    const handleTouchEnd = () => {
-        isDragging = false;
-        mapContainer.style.cursor = 'grab';
-    };
-
-    // Habilitar el arrastre con el mouse
+    // Activar y desactivar el arrastre al hacer clic (solo en PC)
     mapContainer.addEventListener('click', (e) => {
-        if (!isDragging) {
-            // Iniciar el movimiento
-            isDragging = true;
-            startX = e.pageX - offsetX;
-            startY = e.pageY - offsetY;
-            mapContainer.style.cursor = 'grabbing';
-        } else {
-            // Detener el movimiento
-            isDragging = false;
-            mapContainer.style.cursor = 'grab';
+        if (window.innerWidth > 768) { // Solo en PC
+            if (!isDragging) {
+                // Iniciar el movimiento
+                isDragging = true;
+                startX = e.pageX - offsetX;
+                startY = e.pageY - offsetY;
+                mapContainer.style.cursor = 'grabbing';
+            } else {
+                // Detener el movimiento
+                isDragging = false;
+                mapContainer.style.cursor = 'grab';
+            }
         }
     });
 
@@ -284,11 +260,6 @@
         map.style.transform = `translate(0px, 0px) scale(1)`;
         zoomSlider.value = 1; // Resetear la barra de zoom
     });
-
-    // Agregar soporte táctil
-    mapContainer.addEventListener('touchstart', handleTouchStart);
-    mapContainer.addEventListener('touchmove', handleTouchMove);
-    mapContainer.addEventListener('touchend', handleTouchEnd);
 </script>
 
 </body>
