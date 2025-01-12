@@ -41,12 +41,18 @@
                 const svgDoc = mapObject.contentDocument; // Accede al contenido interno del SVG
                 const svgElement = svgDoc.querySelector("svg"); // Selecciona el elemento raíz <svg>
 
+                // Aseguramos que el elemento SVG tenga el atributo `transform`
+                svgElement.setAttribute("style", "transform-origin: 0 0;");
+
                 // Aplica Panzoom al elemento SVG
-                Panzoom(svgElement, {
-                    maxScale: 5, // Zoom máximo
+                const panzoomInstance = Panzoom(svgElement, {
+                    maxScale: 5,  // Zoom máximo
                     minScale: 0.5, // Zoom mínimo
                     contain: "outside", // Permitir mover fuera del contenedor
                 });
+
+                // Habilitar zoom con la rueda del ratón
+                svgDoc.addEventListener("wheel", panzoomInstance.zoomWithWheel);
             });
         });
     </script>
