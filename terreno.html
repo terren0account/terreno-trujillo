@@ -3,61 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Interactivo</title>
-    <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
+    <title>Mapa Interactivo SVG</title>
     <style>
-        /* Contenedor para centrar y limitar el mapa */
-        #map-container {
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
+        /* Estilo global */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f0f0f0;
+            min-height: 100vh;
         }
 
-        object {
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 80%;
+            flex-wrap: wrap; /* Permitir que los elementos se ajusten en pantallas más pequeñas */
+        }
+
+        /* Contenedor del mapa */
+        #map-container {
+            width: 70%;
+            height: 600px;
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Imagen del mapa */
+        img {
             width: 100%;
             height: 100%;
+            position: absolute;
+            transition: transform 0.3s ease;
+        }
+
+        /* Panel de control */
+        .control-panel {
+            width: 25%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: sticky;
+            top: 20px; /* Pegado al top */
+            height: 600px;
+        }
+
+        /* Título de panel */
+        .panel-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* Botones del panel */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+        }
+
+        /* Botón de redirección */
+        .back-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        /* Botón de reset */
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* Barra deslizadora de zoom */
+        .zoom-slider-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        .zoom-slider {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .zoom-label {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Texto informativo */
+        .info-text {
+            text-align: center;
+            font-size: 22px;
+            color: #333;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Ajustes para pantallas móviles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column; /* Cambiar a columna en dispositivos móviles */
+                width: 90%;
+            }
+
+            .control-panel {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-top: 20px;
+            }
+
+            #map-container {
+                width: 100%;
+                height: 400px;
+            }
+
+            .info-text {
+                font-size: 18px;
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="map-container">
-        <!-- Aquí cargamos el mapa SVG -->
-        <object id="map" type="image/svg+xml" data="mapa.svg"></object>
+
+<div class="container">
+    <!-- Panel de control (a la derecha) -->
+    <div class="control-panel">
+        <div class="panel-title">Controles</div>
+        
+        <!-- Botón de redirección -->
+        <a href="index.html">
+            <button class="btn back-btn">Volver a la página principal</button>
+        </a>
+
+        <!-- Botón de reset -->
+        <button class="btn reset-btn" id="reset-btn">Resetear</button>
+
+        <!-- Barra deslizadora de zoom -->
+        <div class="zoom-slider-container">
+            <label for="zoom-slider" class="zoom-label">Ajustar Zoom</label>
+            <input type="range" id="zoom-slider" class="zoom-slider" min="0.5" max="3" step="0.1" value="1">
+        </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const mapObject = document.getElementById("map");
+    <!-- Contenedor del mapa -->
+    <div id="map-container">
+        <!-- Usamos <img> para cargar el archivo SVG -->
+        <img id="map" src="mapa.svg" alt="Mapa SVG">
+    </div>
+</div>
 
-            // Esperamos a que el archivo SVG se cargue
-            mapObject.addEventListener("load", () => {
-                const svgDoc = mapObject.contentDocument; // Accede al contenido interno del SVG
-                const svgElement = svgDoc.querySelector("svg"); // Selecciona el elemento raíz <svg>
+<!-- Texto informativo -->
+<div class="info-text">
+    Elige tu lote y llama ya
+</div>
 
-                // Aplica Panzoom al elemento SVG
-                const panzoomInstance = Panzoom(svgElement, {
-                    maxScale: 5,  // Zoom máximo
-                    minScale: 0.5, // Zoom mínimo
-                    contain: "outside", // Permitir mover fuera del contenedor
-                });
+<script>
+    const mapContainer = document.getElementById('map-container');
+    const map = document.getElementById('map');
+    const resetBtn = document.getElementById('reset-btn');
+    const zoomSlider = document.getElementById('zoom-slider');
 
-                // Habilitar zoom con la rueda del ratón
-                svgElement.addEventListener("wheel", panzoomInstance.zoomWithWheel);
+    let scale = 1;
+    let startX, startY, isDragging = false;
+    let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
 
-                // Instrucción adicional para asegurarte de que el mapa sea arrastrable con el mouse
-                svgElement.setAttribute("style", "cursor: grab;");
-                svgElement.addEventListener("mousedown", () => {
-                    svgElement.style.cursor = "grabbing";
-                });
-                svgElement.addEventListener("mouseup", () => {
-                    svgElement.style.cursor = "grab";
-                });
-            });
-        });
-    </script>
+    // Activar y desactivar el arrastre al hacer clic
+    mapContainer.addEventListener('click', (e) => {
+        if (!isDragging) {
+            // Iniciar el movimiento
+            isDragging = true;
+            startX = e.pageX - offsetX;
+            startY = e.pageY - offsetY;
+            mapContainer.style.cursor = 'grabbing';
+        } else {
+            // Detener el movimiento
+            isDragging = false;
+            mapContainer.style.cursor = 'grab';
+        }
+    });
+
+    mapContainer.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.pageX - startX;
+            const dy = e.pageY - startY;
+            offsetX = dx;
+            offsetY = dy;
+            map.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+        }
+    });
+
+    // Habilitar el zoom con la rueda del mouse
+    mapContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            scale += 0.1;
+        } else {
+            scale = Math.max(0.5, scale - 0.1);
+        }
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        zoomSlider.value = scale; // Sincronizar la barra de zoom
+    });
+
+    // Sincronizar el valor de la barra de zoom con la escala
+    zoomSlider.addEventListener('input', (e) => {
+        scale = parseFloat(e.target.value);
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    });
+
+    // Resetear el mapa a su posición y escala original
+    resetBtn.addEventListener('click', () => {
+        scale = 1;
+        offsetX = 0;
+        offsetY = 0;
+        map.style.transform = `translate(0px, 0px) scale(1)`;
+        zoomSlider.value = 1; // Resetear la barra de zoom
+    });
+</script>
+
 </body>
 </html>
