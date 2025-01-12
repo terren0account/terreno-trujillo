@@ -17,12 +17,9 @@
             background-color: #f0f0f0;
         }
 
-        svg {
-            display: block;
-            width: auto;
+        object {
+            width: 100%;
             height: 100%;
-            max-width: 100%;
-            max-height: 100%;
         }
     </style>
 </head>
@@ -36,13 +33,10 @@
         document.addEventListener("DOMContentLoaded", () => {
             const mapObject = document.getElementById("map");
 
-            // Esperamos a que el mapa SVG se cargue
+            // Esperamos a que el archivo SVG se cargue
             mapObject.addEventListener("load", () => {
                 const svgDoc = mapObject.contentDocument; // Accede al contenido interno del SVG
                 const svgElement = svgDoc.querySelector("svg"); // Selecciona el elemento raíz <svg>
-
-                // Aseguramos que el elemento SVG tenga transformaciones habilitadas
-                svgElement.setAttribute("style", "transform-origin: 0 0;");
 
                 // Aplica Panzoom al elemento SVG
                 const panzoomInstance = Panzoom(svgElement, {
@@ -51,13 +45,17 @@
                     contain: "outside", // Permitir mover fuera del contenedor
                 });
 
-                // Habilitar pan (arrastrar para mover) con el mouse
-                svgDoc.addEventListener("mousedown", (e) => {
-                    panzoomInstance.pan(e);
-                });
-
                 // Habilitar zoom con la rueda del ratón
-                svgDoc.addEventListener("wheel", panzoomInstance.zoomWithWheel);
+                svgElement.addEventListener("wheel", panzoomInstance.zoomWithWheel);
+
+                // Instrucción adicional para asegurarte de que el mapa sea arrastrable con el mouse
+                svgElement.setAttribute("style", "cursor: grab;");
+                svgElement.addEventListener("mousedown", () => {
+                    svgElement.style.cursor = "grabbing";
+                });
+                svgElement.addEventListener("mouseup", () => {
+                    svgElement.style.cursor = "grab";
+                });
             });
         });
     </script>
