@@ -16,13 +16,14 @@
         }
 
         #map-container {
-            width: 100vw;
-            height: 100vh;
+            width: 90vw;
+            height: 90vh;
             position: relative;
             overflow: hidden;
-            border-radius: 0;
+            border-radius: 8px;
             background: #000;
-            touch-action: none;
+            box-shadow: 0 4px 6px #0003;
+            touch-action: none; /* Mejora el rendimiento en dispositivos móviles */
         }
 
         #map {
@@ -30,40 +31,31 @@
             top: 50%;
             left: 50%;
             transform-origin: center;
+            transition: transform 0.2s;
             max-width: none;
             cursor: grab;
         }
 
         .panel {
             position: absolute;
+            right: 10px;
+            padding: 15px;
             border-radius: 8px;
             background: #282828e6;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             z-index: 1000;
             font-size: 14px;
         }
 
-        #controls {
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            padding: 10px;
-        }
-
-        #info {
-            top: 10px;
-            left: 10px;
-            font-size: 12px;
-            padding: 5px;
-        }
+        #controls { top: 20px; }
+        #info { bottom: 20px; }
 
         .btn {
             padding: 10px 15px;
             border: 2px solid #2196F3;
-            border-radius: 4px;
+            border-radius: 0px;
             background: transparent;
             color: #2196F3;
             cursor: pointer;
@@ -84,26 +76,40 @@
             cursor: not-allowed;
         }
 
-        #zoomSliderContainer {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
+        /* Estilos para pantallas pequeñas */
+        @media (max-width: 600px) {
+            .panel {
+                font-size: 12px;
+                right: 5px;
+            }
+
+            #controls {
+                top: 10px;
+            }
+
+            #info {
+                bottom: 10px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            #zoomSlider {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            #zoomLevel {
+                text-align: center;
+            }
         }
 
-        #zoomSlider {
-            width: 100%;
-        }
-
-        #zoomLevel {
-            text-align: center;
-        }
-
-        /* Botón de inicio */
+        /* Estilo para el botón de inicio */
         #goHome {
             position: absolute;
-            bottom: 10px;
+            top: 10px;
             left: 10px;
             padding: 10px 15px;
             border: 2px solid #ff5722;
@@ -125,6 +131,7 @@
         <img id="map" src="mapa.svg" alt="Mapa" draggable="false">
         
         <div id="controls" class="panel">
+            <!-- Para dispositivos móviles, cambiamos los botones por una barra deslizadora -->
             <div id="zoomSliderContainer">
                 <input type="range" id="zoomSlider" min="50" max="300" value="100">
                 <div id="zoomLevel">100%</div>
@@ -133,11 +140,11 @@
         </div>
 
         <div id="info" class="panel">
-            <div>Pellizcar para zoom</div>
-            <div>Arrastrar: mover mapa</div>
+            <div>Rueda del ratón: zoom</div>
+            <div>Click + arrastrar: mover</div>
         </div>
 
-        <button id="goHome">Inicio</button>
+        <button id="goHome">Ir a Inicio</button>
     </div>
 
     <script>
@@ -164,7 +171,8 @@
                 this.config = {
                     minZoom: 0.5,
                     maxZoom: 3,
-                    zoomStep: 1.1
+                    zoomStep: 1.1,
+                    moveLimit: 100
                 };
 
                 this.init();
@@ -173,20 +181,33 @@
             init() {
                 this.map.onload = () => this.setInitialState();
                 this.container.onmousedown = e => this.startDrag(e.clientX, e.clientY);
-                this.container.ontouchstart = e => this.startTouch(e);
+                this.container.ontouchstart = e => {
+                    e.preventDefault();  // Evitar el desplazamiento de la página
+                    this.startTouch(e);
+                };
                 this.container.onmousemove = e => this.drag(e.clientX, e.clientY);
-                this.container.ontouchmove = e => this.dragTouch(e);
+                this.container.ontouchmove = e => {
+                    e.preventDefault();  // Evitar el desplazamiento de la página
+                    this.dragTouch(e);
+                };
                 this.container.onwheel = e => this.handleZoom(e);
                 
                 ['mouseup', 'mouseleave', 'touchend'].forEach(event => 
                     this.container.addEventListener(event, () => this.state.isDragging = false));
 
+                // Cambiar control de zoom en móviles
                 this.zoomSlider.oninput = () => this.setZoomFromSlider();
-                this.resetButton.onclick = () => this.reset();
+                this.zoomSlider.value = 100; // Iniciar con el zoom al 100%
+
+                // Botón "Ir a Inicio"
                 document.getElementById('goHome').onclick = () => window.location.href = 'index.html';
+
+                // Habilitar el botón de reset
+                this.resetButton.onclick = () => this.reset();
             }
 
             setInitialState() {
+                this.updateBounds();
                 const container = this.container.getBoundingClientRect();
                 const map = this.map.getBoundingClientRect();
 
@@ -206,7 +227,7 @@
             }
 
             startTouch(e) {
-                if (e.touches.length === 2) {
+                if (e.touches.length == 2) {
                     this.state.lastTouchDistance = this.getTouchDistance(e);
                 } else {
                     this.startDrag(e.touches[0].clientX, e.touches[0].clientY);
@@ -217,14 +238,15 @@
                 if (!this.state.isDragging) return;
                 this.state.x = x - this.state.lastX;
                 this.state.y = y - this.state.lastY;
+                this.clampPosition();
                 this.updateTransform();
             }
 
             dragTouch(e) {
-                if (e.touches.length === 2) {
+                if (e.touches.length == 2) {
                     const distance = this.getTouchDistance(e);
                     const scaleChange = distance / this.state.lastTouchDistance;
-                    this.zoom(scaleChange > 1);
+                    this.zoom(scaleChange > 1, { x: e.touches[0].clientX, y: e.touches[0].clientY });
                     this.state.lastTouchDistance = distance;
                 } else {
                     this.drag(e.touches[0].clientX, e.touches[0].clientY);
@@ -239,39 +261,86 @@
 
             handleZoom(e) {
                 e.preventDefault();
-                const scale = e.deltaY < 0 ? this.config.zoomStep : 1 / this.config.zoomStep;
-                this.zoom(scale > 1);
+                const rect = this.container.getBoundingClientRect();
+                const point = { x: rect.width / 20, y: rect.height / 2 };
+
+                this.zoom(e.deltaY < 0, point);
             }
 
-            zoom(isZoomIn) {
+            zoom(isZoomIn, point = null) {
                 const oldScale = this.state.scale;
                 this.state.scale = isZoomIn
                     ? Math.min(this.state.scale * this.config.zoomStep, this.config.maxZoom)
                     : Math.max(this.state.scale / this.config.zoomStep, this.config.minZoom);
 
                 if (oldScale !== this.state.scale) {
+                    if (!point) {
+                        const rect = this.container.getBoundingClientRect();
+                        point = { x: rect.width / 20, y: rect.height / 2 };
+                    }
+
+                    const scale = this.state.scale / oldScale;
+                    this.state.x = point.x - (point.x - this.state.x) * scale;
+                    this.state.y = point.y - (point.y - this.state.y) * scale;
+
+                    this.updateBounds();
+                    this.clampPosition();
                     this.updateTransform();
+                    this.updateZoomLevel();
                 }
             }
 
             setZoomFromSlider() {
-                this.state.scale = this.zoomSlider.value / 100;
+                const zoomValue = this.zoomSlider.value / 100;
+                this.state.scale = zoomValue;
                 this.updateTransform();
+                this.updateZoomLevel();
+            }
+
+            updateBounds() {
+                const container = this.container.getBoundingClientRect();
+                const map = this.map.getBoundingClientRect();
+                const extra = (this.config.moveLimit / 100) * Math.max(map.width, map.height);
+
+                this.state.bounds = {
+                    minX: container.width - map.width - extra,
+                    maxX: extra,
+                    minY: container.height - map.height - extra,
+                    maxY: extra
+                };
+            }
+
+            clampPosition() {
+                if (!this.state.bounds) return;
+
+                this.state.x = Math.max(this.state.bounds.minX, 
+                                      Math.min(this.state.bounds.maxX, this.state.x));
+                this.state.y = Math.max(this.state.bounds.minY, 
+                                      Math.min(this.state.bounds.maxY, this.state.y));
             }
 
             reset() {
                 this.state.scale = this.state.initialScale;
                 this.state.x = this.state.initialX;
                 this.state.y = this.state.initialY;
+
                 this.updateTransform();
+                this.updateZoomLevel();
             }
 
             updateTransform() {
-                this.map.style.transform = `translate(-50%, -50%) scale(${this.state.scale}) translate(${this.state.x}px, ${this.state.y}px)`;
+                this.map.style.transform = 
+                    `translate(-50%, -50%) scale(${this.state.scale}) 
+                     translate(${this.state.x / this.state.scale}px, ${this.state.y / this.state.scale}px)`;
+            }
+
+            updateZoomLevel() {
+                this.zoomLevel.textContent = `${Math.round(this.state.scale * 100)}%`;
             }
         }
 
-        new MapViewer('map-container');
+        // Inicializar
+        const mapViewer = new MapViewer('map-container');
     </script>
 </body>
 </html>
