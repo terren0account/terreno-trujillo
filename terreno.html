@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mapa Interactivo</title>
     <style>
         body {
@@ -13,17 +13,17 @@
             font-family: Arial, sans-serif;
             display: grid;
             place-items: center;
+            overflow: hidden; /* Previene scroll indeseado */
         }
 
         #map-container {
-            width: 90vw;
-            height: 90vh;
+            width: 100vw;
+            height: 100vh;
             position: relative;
             overflow: hidden;
-            border-radius: 8px;
             background: #000;
             box-shadow: 0 4px 6px #0003;
-            touch-action: none; /* Mejora el rendimiento en dispositivos móviles */
+            touch-action: none;
         }
 
         #map {
@@ -34,11 +34,13 @@
             transition: transform 0.2s;
             max-width: none;
             cursor: grab;
+            width: auto;
+            height: auto;
+            max-height: 90vh;
         }
 
         .panel {
-            position: absolute;
-            right: 10px;
+            position: fixed; /* Cambiado a fixed para mejor posicionamiento */
             padding: 15px;
             border-radius: 8px;
             background: #282828e6;
@@ -47,82 +49,112 @@
             gap: 10px;
             z-index: 1000;
             font-size: 14px;
+            touch-action: none;
         }
 
-        #controls { top: 20px; }
-        #info { bottom: 20px; }
+        #controls { 
+            top: 20px;
+            right: 20px;
+            width: auto;
+        }
+
+        #info { 
+            bottom: 20px;
+            right: 20px;
+            width: auto;
+        }
 
         .btn {
-            padding: 10px 15px;
+            padding: 12px 20px; /* Botones más grandes para móvil */
             border: 2px solid #2196F3;
-            border-radius: 0px;
-            background: transparent;
-            color: #2196F3;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn:hover { 
+            border-radius: 8px;
             background: #2196F3;
             color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+            min-width: 100px; /* Ancho mínimo para mejor tap target */
+            touch-action: manipulation;
         }
 
         .btn:active { 
             transform: scale(0.98); 
+            background: #1976D2;
         }
 
-        .btn:disabled { 
-            background: #555;
-            cursor: not-allowed;
+        #goHome {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 20px;
+            border: 2px solid #ff5722;
+            background-color: #ff5722;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 16px;
+            min-width: 100px;
+            touch-action: manipulation;
         }
 
-        /* Estilos para pantallas pequeñas */
-        @media (max-width: 600px) {
+        #goHome:active {
+            background-color: #f4511e;
+            transform: scale(0.98);
+        }
+
+        /* Estilos específicos para móvil */
+        @media (max-width: 768px) {
             .panel {
-                font-size: 12px;
-                right: 5px;
+                padding: 10px;
             }
 
             #controls {
                 top: 10px;
+                right: 10px;
             }
 
             #info {
                 bottom: 10px;
-            }
-
-            .btn {
-                padding: 8px 12px;
-                font-size: 12px;
+                right: 10px;
             }
 
             #zoomSlider {
-                width: 100%;
-                margin-top: 10px;
+                width: 150px;
+                height: 30px; /* Más alto para mejor control táctil */
             }
 
-            #zoomLevel {
-                text-align: center;
+            .btn, #goHome {
+                padding: 10px 15px;
+                font-size: 14px;
             }
         }
 
-        /* Estilo para el botón de inicio */
-        #goHome {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 10px 15px;
-            border: 2px solid #ff5722;
-            background-color: transparent;
-            color: #ff5722;
-            border-radius: 8px;
+        /* Mejoras para el slider */
+        #zoomSlider {
+            width: 100%;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: #2196F3;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        #zoomSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
             cursor: pointer;
-            z-index: 1000;
         }
 
-        #goHome:hover {
-            background-color: #ff5722;
-            color: white;
+        #zoomLevel {
+            text-align: center;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -131,7 +163,6 @@
         <img id="map" src="mapa.svg" alt="Mapa" draggable="false">
         
         <div id="controls" class="panel">
-            <!-- Para dispositivos móviles, cambiamos los botones por una barra deslizadora -->
             <div id="zoomSliderContainer">
                 <input type="range" id="zoomSlider" min="50" max="300" value="100">
                 <div id="zoomLevel">100%</div>
@@ -140,11 +171,11 @@
         </div>
 
         <div id="info" class="panel">
-            <div>Rueda del ratón: zoom</div>
-            <div>Click + arrastrar: mover</div>
+            <div>Pellizcar: zoom</div>
+            <div>Tocar + arrastrar: mover</div>
         </div>
 
-        <button id="goHome">Ir a Inicio</button>
+        <button id="goHome" onclick="window.location.href='index.html'">Ir a Inicio</button>
     </div>
 
     <script>
@@ -155,6 +186,7 @@
                 this.zoomLevel = document.getElementById('zoomLevel');
                 this.zoomSlider = document.getElementById('zoomSlider');
                 this.resetButton = document.getElementById('reset');
+                this.homeButton = document.getElementById('goHome');
 
                 this.state = {
                     scale: 1,
@@ -165,7 +197,9 @@
                     initialY: 0,
                     isDragging: false,
                     bounds: null,
-                    lastTouchDistance: null
+                    lastTouchDistance: null,
+                    lastTouchX: 0,
+                    lastTouchY: 0
                 };
 
                 this.config = {
@@ -179,31 +213,106 @@
             }
 
             init() {
-                this.map.onload = () => this.setInitialState();
-                this.container.onmousedown = e => this.startDrag(e.clientX, e.clientY);
-                this.container.ontouchstart = e => {
-                    e.preventDefault();  // Evitar el desplazamiento de la página
-                    this.startTouch(e);
-                };
-                this.container.onmousemove = e => this.drag(e.clientX, e.clientY);
-                this.container.ontouchmove = e => {
-                    e.preventDefault();  // Evitar el desplazamiento de la página
-                    this.dragTouch(e);
-                };
-                this.container.onwheel = e => this.handleZoom(e);
+                // Asegurarse de que la imagen esté cargada
+                if (this.map.complete) {
+                    this.setInitialState();
+                } else {
+                    this.map.onload = () => this.setInitialState();
+                }
+
+                // Eventos táctiles
+                this.container.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleTouchStart(e);
+                }, { passive: false });
+
+                this.container.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    this.handleTouchMove(e);
+                }, { passive: false });
+
+                this.container.addEventListener('touchend', () => {
+                    this.state.isDragging = false;
+                    this.state.lastTouchDistance = null;
+                });
+
+                // Eventos de mouse
+                this.container.addEventListener('mousedown', (e) => this.startDrag(e.clientX, e.clientY));
+                this.container.addEventListener('mousemove', (e) => this.drag(e.clientX, e.clientY));
+                this.container.addEventListener('mouseup', () => this.state.isDragging = false);
+                this.container.addEventListener('mouseleave', () => this.state.isDragging = false);
+                this.container.addEventListener('wheel', (e) => this.handleZoom(e));
+
+                // Control de zoom
+                this.zoomSlider.addEventListener('input', () => this.setZoomFromSlider());
                 
-                ['mouseup', 'mouseleave', 'touchend'].forEach(event => 
-                    this.container.addEventListener(event, () => this.state.isDragging = false));
+                // Botón de reset
+                this.resetButton.addEventListener('click', () => this.reset());
+                
+                // Botón de inicio
+                this.homeButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = 'index.html';
+                });
 
-                // Cambiar control de zoom en móviles
-                this.zoomSlider.oninput = () => this.setZoomFromSlider();
-                this.zoomSlider.value = 100; // Iniciar con el zoom al 100%
+                // Prevenir zoom del navegador en doble tap
+                this.container.addEventListener('dblclick', (e) => e.preventDefault());
 
-                // Botón "Ir a Inicio"
-                document.getElementById('goHome').onclick = () => window.location.href = 'index.html';
+                // Centrar el mapa inicialmente
+                this.centerMap();
+            }
 
-                // Habilitar el botón de reset
-                this.resetButton.onclick = () => this.reset();
+            centerMap() {
+                const containerRect = this.container.getBoundingClientRect();
+                const mapRect = this.map.getBoundingClientRect();
+                
+                this.state.x = (containerRect.width - mapRect.width) / 2;
+                this.state.y = (containerRect.height - mapRect.height) / 2;
+                
+                this.updateTransform();
+            }
+
+            handleTouchStart(e) {
+                if (e.touches.length === 2) {
+                    this.state.lastTouchDistance = this.getTouchDistance(e.touches);
+                } else if (e.touches.length === 1) {
+                    this.state.lastTouchX = e.touches[0].clientX;
+                    this.state.lastTouchY = e.touches[0].clientY;
+                    this.state.isDragging = true;
+                }
+            }
+
+            handleTouchMove(e) {
+                if (e.touches.length === 2) {
+                    const newDistance = this.getTouchDistance(e.touches);
+                    if (this.state.lastTouchDistance) {
+                        const scale = newDistance / this.state.lastTouchDistance;
+                        const center = {
+                            x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                            y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                        };
+                        this.zoom(scale > 1, center);
+                    }
+                    this.state.lastTouchDistance = newDistance;
+                } else if (e.touches.length === 1 && this.state.isDragging) {
+                    const deltaX = e.touches[0].clientX - this.state.lastTouchX;
+                    const deltaY = e.touches[0].clientY - this.state.lastTouchY;
+                    
+                    this.state.x += deltaX;
+                    this.state.y += deltaY;
+                    
+                    this.state.lastTouchX = e.touches[0].clientX;
+                    this.state.lastTouchY = e.touches[0].clientY;
+                    
+                    this.clampPosition();
+                    this.updateTransform();
+                }
+            }
+
+            getTouchDistance(touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
             }
 
             setInitialState() {
@@ -211,13 +320,14 @@
                 const container = this.container.getBoundingClientRect();
                 const map = this.map.getBoundingClientRect();
 
-                this.state.initialX = (container.width - map.width) / 2;
-                this.state.initialY = (container.height - map.height) / 2;
-
-                this.state.x = this.state.initialX;
-                this.state.y = this.state.initialY;
-
-                this.updateTransform();
+                this.state.initialScale = Math.min(
+                    container.width / map.width,
+                    container.height / map.height
+                );
+                
+                this.state.scale = this.state.initialScale;
+                this.centerMap();
+                this.updateZoomLevel();
             }
 
             startDrag(x, y) {
@@ -226,93 +336,77 @@
                 this.state.lastY = y - this.state.y;
             }
 
-            startTouch(e) {
-                if (e.touches.length == 2) {
-                    this.state.lastTouchDistance = this.getTouchDistance(e);
-                } else {
-                    this.startDrag(e.touches[0].clientX, e.touches[0].clientY);
-                }
-            }
-
             drag(x, y) {
                 if (!this.state.isDragging) return;
+                
                 this.state.x = x - this.state.lastX;
                 this.state.y = y - this.state.lastY;
+                
                 this.clampPosition();
                 this.updateTransform();
-            }
-
-            dragTouch(e) {
-                if (e.touches.length == 2) {
-                    const distance = this.getTouchDistance(e);
-                    const scaleChange = distance / this.state.lastTouchDistance;
-                    this.zoom(scaleChange > 1, { x: e.touches[0].clientX, y: e.touches[0].clientY });
-                    this.state.lastTouchDistance = distance;
-                } else {
-                    this.drag(e.touches[0].clientX, e.touches[0].clientY);
-                }
-            }
-
-            getTouchDistance(e) {
-                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                return Math.sqrt(dx * dx + dy * dy);
             }
 
             handleZoom(e) {
                 e.preventDefault();
                 const rect = this.container.getBoundingClientRect();
-                const point = { x: rect.width / 20, y: rect.height / 2 };
-
+                const point = {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
                 this.zoom(e.deltaY < 0, point);
             }
 
-            zoom(isZoomIn, point = null) {
+            zoom(isZoomIn, point) {
                 const oldScale = this.state.scale;
-                this.state.scale = isZoomIn
+                const newScale = isZoomIn
                     ? Math.min(this.state.scale * this.config.zoomStep, this.config.maxZoom)
                     : Math.max(this.state.scale / this.config.zoomStep, this.config.minZoom);
-
-                if (oldScale !== this.state.scale) {
-                    if (!point) {
-                        const rect = this.container.getBoundingClientRect();
-                        point = { x: rect.width / 20, y: rect.height / 2 };
+                
+                if (oldScale !== newScale) {
+                    this.state.scale = newScale;
+                    
+                    if (point) {
+                        const scale = newScale / oldScale;
+                        this.state.x = point.x - (point.x - this.state.x) * scale;
+                        this.state.y = point.y - (point.y - this.state.y) * scale;
                     }
-
-                    const scale = this.state.scale / oldScale;
-                    this.state.x = point.x - (point.x - this.state.x) * scale;
-                    this.state.y = point.y - (point.y - this.state.y) * scale;
-
+                    
                     this.updateBounds();
                     this.clampPosition();
                     this.updateTransform();
                     this.updateZoomLevel();
+                    this.zoomSlider.value = Math.round(this.state.scale * 100);
                 }
             }
 
             setZoomFromSlider() {
-                const zoomValue = this.zoomSlider.value / 100;
-                this.state.scale = zoomValue;
-                this.updateTransform();
-                this.updateZoomLevel();
+                const newScale = this.zoomSlider.value / 100;
+                if (newScale !== this.state.scale) {
+                    const center = {
+                        x: this.container.clientWidth / 2,
+                        y: this.container.clientHeight / 2
+                    };
+                    this.zoom(newScale > this.state.scale, center);
+                }
             }
 
             updateBounds() {
                 const container = this.container.getBoundingClientRect();
                 const map = this.map.getBoundingClientRect();
-                const extra = (this.config.moveLimit / 100) * Math.max(map.width, map.height);
-
+                const scaledWidth = map.width * this.state.scale;
+                const scaledHeight = map.height * this.state.scale;
+                
                 this.state.bounds = {
-                    minX: container.width - map.width - extra,
-                    maxX: extra,
-                    minY: container.height - map.height - extra,
-                    maxY: extra
+                    minX: container.width - scaledWidth,
+                    maxX: 0,
+                    minY: container.height - scaledHeight,
+                    maxY: 0
                 };
             }
 
             clampPosition() {
                 if (!this.state.bounds) return;
-
+                
                 this.state.x = Math.max(this.state.bounds.minX, 
                                       Math.min(this.state.bounds.maxX, this.state.x));
                 this.state.y = Math.max(this.state.bounds.minY, 
@@ -321,17 +415,15 @@
 
             reset() {
                 this.state.scale = this.state.initialScale;
-                this.state.x = this.state.initialX;
-                this.state.y = this.state.initialY;
-
-                this.updateTransform();
+                this.centerMap();
                 this.updateZoomLevel();
+                this.zoomSlider.value = Math.round(this.state.scale * 100);
             }
 
             updateTransform() {
-                this.map.style.transform = 
-                    `translate(-50%, -50%) scale(${this.state.scale}) 
-                     translate(${this.state.x / this.state.scale}px, ${this.state.y / this.state.scale}px)`;
+                requestAnimationFrame(() => {
+                    this.map.style.transform = `translate(${this.state.x}px, ${this.state.y}px) scale(${this.state.scale})`;
+                });
             }
 
             updateZoomLevel() {
@@ -339,9 +431,14 @@
             }
         }
 
-        // Inicializar
-        const mapViewer = new MapViewer('map-container');
-    </script>
-</body>
-</html>
+        // Inicializar el visor del mapa
+// Inicializar el visor del mapa
+                const mapViewer = new MapViewer('map-container');
 
+                // Prevenir el comportamiento por defecto de algunos gestos móviles
+                document.addEventListener('gesturestart', (e) => e.preventDefault());
+                document.addEventListener('gesturechange', (e) => e.preventDefault());
+                document.addEventListener('gestureend', (e) => e.preventDefault());
+            </script>
+        </body>
+        </html>
