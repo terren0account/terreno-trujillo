@@ -95,6 +95,15 @@
                 padding: 8px 12px;
                 font-size: 12px;
             }
+
+            #zoomSlider {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            #zoomLevel {
+                text-align: center;
+            }
         }
 
         /* Estilo para el botón de inicio */
@@ -122,10 +131,12 @@
         <img id="map" src="mapa.svg" alt="Mapa" draggable="false">
         
         <div id="controls" class="panel">
-            <button id="zoomIn" class="btn">+</button>
-            <div id="zoomLevel">100%</div>
-            <button id="zoomOut" class="btn">-</button>
-            <button id="reset" class="btn">Reset</button>
+            <!-- Para dispositivos móviles, cambiamos los botones por una barra deslizadora -->
+            <div id="zoomSliderContainer">
+                <input type="range" id="zoomSlider" min="50" max="300" value="100">
+                <div id="zoomLevel">100%</div>
+            </div>
+            <button id="reset" class="btn" disabled>Reset</button>
         </div>
 
         <div id="info" class="panel">
@@ -142,6 +153,7 @@
                 this.container = document.getElementById(containerId);
                 this.map = this.container.querySelector('img');
                 this.zoomLevel = document.getElementById('zoomLevel');
+                this.zoomSlider = document.getElementById('zoomSlider');
 
                 this.state = {
                     scale: 1,
@@ -182,14 +194,9 @@
                 ['mouseup', 'mouseleave', 'touchend'].forEach(event => 
                     this.container.addEventListener(event, () => this.state.isDragging = false));
 
-                document.getElementById('zoomIn').onclick = () => this.zoom(true);
-                document.getElementById('zoomOut').onclick = () => this.zoom(false);
-                document.getElementById('reset').onclick = () => this.reset();
-
-                window.onresize = () => {
-                    this.updateBounds();
-                    this.clampPosition();
-                };
+                // Cambiar control de zoom en móviles
+                this.zoomSlider.oninput = () => this.setZoomFromSlider();
+                this.zoomSlider.value = 100; // Iniciar con el zoom al 100%
 
                 // Botón "Ir a Inicio"
                 document.getElementById('goHome').onclick = () => window.location.href = 'index.html';
@@ -279,6 +286,13 @@
                 }
             }
 
+            setZoomFromSlider() {
+                const zoomValue = this.zoomSlider.value / 100;
+                this.state.scale = zoomValue;
+                this.updateTransform();
+                this.updateZoomLevel();
+            }
+
             updateBounds() {
                 const container = this.container.getBoundingClientRect();
                 const map = this.map.getBoundingClientRect();
@@ -318,23 +332,12 @@
 
             updateZoomLevel() {
                 this.zoomLevel.textContent = `${Math.round(this.state.scale * 100)}%`;
-                document.getElementById('zoomIn').disabled = this.state.scale >= this.config.maxZoom;
-                document.getElementById('zoomOut').disabled = this.state.scale <= this.config.minZoom;
-            }
-
-            moveMap(x, y) {
-                this.state.x += x;
-                this.state.y += y;
-                this.clampPosition();
-                this.updateTransform();
             }
         }
 
         // Inicializar
         const mapViewer = new MapViewer('map-container');
-
-        // Mover el mapa con código
-        mapViewer.moveMap(1, 50); // Ejemplo de movimiento
     </script>
 </body>
 </html>
+
