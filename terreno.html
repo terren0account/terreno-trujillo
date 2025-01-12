@@ -14,9 +14,10 @@
             color: #333;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             flex-direction: column;
+            overflow-x: hidden; /* Evitar desplazamiento horizontal */
         }
 
         /* Contenedor principal */
@@ -40,6 +41,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             background-color: #fff;
             transition: all 0.3s ease-in-out;
+            margin-top: 100px; /* Para asegurar que el panel esté más arriba */
         }
 
         /* Imagen del mapa */
@@ -151,6 +153,7 @@
                 margin-bottom: 10px;
                 position: relative; /* Asegurarse de que esté en la parte superior */
                 z-index: 100; /* Asegurar que el panel esté encima */
+                margin-top: 30px; /* Mover el panel aún más arriba */
             }
 
             #map-container {
