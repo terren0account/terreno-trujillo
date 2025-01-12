@@ -6,7 +6,7 @@
     <title>Mapa Interactivo</title>
     <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <style>
-        /* Estilo para centrar y asegurar que el contenedor no tenga scroll */
+        /* Contenedor para centrar y limitar el mapa */
         #map-container {
             width: 100%;
             height: 100vh;
@@ -41,7 +41,7 @@
                 const svgDoc = mapObject.contentDocument; // Accede al contenido interno del SVG
                 const svgElement = svgDoc.querySelector("svg"); // Selecciona el elemento raíz <svg>
 
-                // Aseguramos que el elemento SVG tenga el atributo `transform`
+                // Aseguramos que el elemento SVG tenga transformaciones habilitadas
                 svgElement.setAttribute("style", "transform-origin: 0 0;");
 
                 // Aplica Panzoom al elemento SVG
@@ -49,6 +49,11 @@
                     maxScale: 5,  // Zoom máximo
                     minScale: 0.5, // Zoom mínimo
                     contain: "outside", // Permitir mover fuera del contenedor
+                });
+
+                // Habilitar pan (arrastrar para mover) con el mouse
+                svgDoc.addEventListener("mousedown", (e) => {
+                    panzoomInstance.pan(e);
                 });
 
                 // Habilitar zoom con la rueda del ratón
