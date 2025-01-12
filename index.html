@@ -14,9 +14,9 @@
         }
 
         header {
-            background-color: rgba(0, 0, 0, 0.5); /* Menú transparente */
-            color: white;
-            padding: 15px 30px;
+            background-color: rgb(14, 184, 235);
+            color: rgb(0, 0, 0);
+            padding: 15px 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -25,8 +25,21 @@
             width: 100%;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(5px); /* Desenfoque de fondo */
-            transition: all 0.3s ease; /* Animación al hacer scroll */
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            height: 70px;
+        }
+
+        header .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        header .logo {
+            height: 100%;
+            max-height: 230px;
+            width: auto;
+            margin-right: 15px;
         }
 
         header h1 {
@@ -34,35 +47,41 @@
             margin: 0;
         }
 
-        .menu {
-            display: flex;
-            gap: 15px;
-        }
-
         .menu a {
-            color: white;
+            color: rgb(0, 0, 0);
             text-decoration: none;
             font-size: 1rem;
             padding: 10px 20px;
             border-radius: 5px;
+            background-color: #ffd500;
             transition: background 0.3s ease;
+            margin-right: 15px
         }
 
         .menu a:hover {
-            background-color: #3b82f6;
+            background-color: #fff12c;
         }
 
-        .cta-container {
-            text-align: center;
-            padding: 60px 20px;
-            background-color: #1e40af;
+        .hero {
+            background-image: url('tru.avif');
+            background-size: cover;
+            background-position: center;
+            height: 670px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            padding: 20px;
+            position: relative;
             margin-top: 70px;
         }
 
-        .cta-container h2 {
+        .hero h1 {
             font-size: 2.5rem;
-            margin-bottom: 20px;
+            margin: 0;
         }
 
         .cta-button {
@@ -95,81 +114,10 @@
             }
         }
 
-        .hero {
-            background-image: url('tru.avif');
-            background-size: cover;
-            background-position: center;
-            height: 670px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
-            text-align: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            margin: 0;
-        }
-
-        .menu {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-
-        /* Franja negra para el menú de contacto */
-        .contact-menu {
-            background-color: rgba(0, 0, 0, 0.7);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1100;
-            display: flex;
-            justify-content: flex-end; /* Alineamos el botón a la derecha */
-            padding: 15px 30px;
-        }
-
-        .contact-button {
-            color: rgb(0, 0, 0);
-            text-decoration: none;
-            font-size: 1.2rem;
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: #17d221;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            opacity: 1;
-            margin-right: 50px
-        }
-
-        .contact-button:hover {
-            background-color: #80cd76;
-            transform: scale(1.1);
-        }
-
-        /* Desvanecimiento del botón al hacer scroll */
-        .hidden {
-            opacity: 0;
-            transition: opacity 0.5s ease-out;
-        }
-
-        .visible {
-            opacity: 1;
-        }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-        }
-
-        .section {
-            margin-bottom: 60px;
         }
 
         .section h2 {
@@ -211,41 +159,30 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        /* Animación para el scroll */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
     </style>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-
-    <!-- Menú de contacto en franja negra, alineado a la derecha -->
-    <div class="contact-menu">
-        <a href="https://wa.me/1234567890" class="contact-button" target="_blank">Contáctanos</a>
-    </div>
+    <header>
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo de la Empresa" class="logo">
+            <h1>Venta de Lotes</h1>
+        </div>
+        <nav class="menu">
+            <a href="https://wa.me/1234567890" target="_blank">Contáctanos</a>
+        </nav>
+    </header>
 
     <div class="hero">
         <h1>Oportunidades que no se repiten</h1>
         <p>Adquiere tu terreno ideal</p>
         <a href="terreno.html" class="cta-button">Explorar Lotes</a>
-        <nav class="menu">
-            <!-- Menú de navegación aquí si es necesario -->
-        </nav>
     </div>
 
     <div class="container">
-        <div class="section fade-in">
+        <div class="section" id="galeria">
             <h2>Galería</h2>
             <div class="gallery">
                 <img src="trujillo.png" alt="Terreno 1">
@@ -255,12 +192,12 @@
             </div>
         </div>
 
-        <div class="section fade-in">
+        <div class="section" id="video">
             <h2>Video Promocional</h2>
             <iframe src="https://www.youtube.com/embed/N6No3HZPhjo" allowfullscreen></iframe>
         </div>
 
-        <div class="section fade-in">
+        <div class="section" id="ubicacion">
             <h2>Ubicación</h2>
             <div id="map" class="map"></div>
         </div>
@@ -276,38 +213,6 @@
         L.marker([-7.946638, -79.069137]).addTo(map)
             .bindPopup('Terreno en Chicama. Ideal para tu proyecto.')
             .openPopup();
-
-        // Animación de fade-in al hacer scroll
-        const sections = document.querySelectorAll('.fade-in');
-
-        function checkVisibility() {
-            const windowHeight = window.innerHeight;
-            sections.forEach(section => {
-                const sectionTop = section.getBoundingClientRect().top;
-                if (sectionTop < windowHeight - 150) {
-                    section.classList.add('visible');
-                }
-            });
-        }
-
-        // Desvanecimiento del botón de contacto al hacer scroll
-        const contactButton = document.querySelector('.contact-button');
-        
-        function fadeOutContactButton() {
-            const scrollY = window.scrollY;
-            if (scrollY > 100) {
-                contactButton.classList.add('hidden');
-            } else {
-                contactButton.classList.remove('hidden');
-            }
-        }
-
-        window.addEventListener('scroll', () => {
-            checkVisibility();
-            fadeOutContactButton();
-        });
-
-        window.addEventListener('load', checkVisibility);
     </script>
 </body>
 </html>
