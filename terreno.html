@@ -16,6 +16,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden; /* Evitar desplazamiento no deseado */
         }
 
         /* Contenedor principal */
@@ -39,6 +40,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             background-color: #fff;
             transition: all 0.3s ease-in-out;
+            touch-action: none; /* Permitir el desplazamiento táctil */
         }
 
         /* Imagen del mapa */
@@ -207,7 +209,31 @@
     let startX, startY, isDragging = false;
     let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
 
-    // Activar y desactivar el arrastre al hacer clic
+    // Función para manejar el movimiento táctil
+    const handleTouchStart = (e) => {
+        e.preventDefault();
+        isDragging = true;
+        startX = e.touches[0].pageX - offsetX;
+        startY = e.touches[0].pageY - offsetY;
+        mapContainer.style.cursor = 'grabbing';
+    };
+
+    const handleTouchMove = (e) => {
+        if (isDragging) {
+            const dx = e.touches[0].pageX - startX;
+            const dy = e.touches[0].pageY - startY;
+            offsetX = dx;
+            offsetY = dy;
+            map.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+        }
+    };
+
+    const handleTouchEnd = () => {
+        isDragging = false;
+        mapContainer.style.cursor = 'grab';
+    };
+
+    // Habilitar el arrastre con el mouse
     mapContainer.addEventListener('click', (e) => {
         if (!isDragging) {
             // Iniciar el movimiento
@@ -258,6 +284,11 @@
         map.style.transform = `translate(0px, 0px) scale(1)`;
         zoomSlider.value = 1; // Resetear la barra de zoom
     });
+
+    // Agregar soporte táctil
+    mapContainer.addEventListener('touchstart', handleTouchStart);
+    mapContainer.addEventListener('touchmove', handleTouchMove);
+    mapContainer.addEventListener('touchend', handleTouchEnd);
 </script>
 
 </body>
