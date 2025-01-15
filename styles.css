@@ -1,31 +1,42 @@
 @media (max-width: 768px) {
     /* Ajustar el header */
     header {
-        flex-direction: column; /* Alinear en columna */
-        align-items: center; /* Centrar contenido */
+        flex-direction: column; /* Alinear los elementos en columna */
+        justify-content: flex-start; /* Centrar el contenido verticalmente */
+        align-items: center; /* Centrar el contenido horizontalmente */
         height: auto; /* Ajustar altura automáticamente */
         padding: 10px 15px;
     }
 
-    /* Reducir tamaño del logo */
+    /* Reducir el tamaño del logo */
     .logo {
-        max-height: 40px; /* Reducir tamaño del logo */
-        margin-bottom: 10px; /* Espaciado inferior */
+        max-height: 40px; /* Reducir el tamaño del logo */
+        margin-bottom: 10px; /* Espaciado inferior para separar del texto */
     }
 
-    /* Reducir tamaño del título */
+    /* Reducir el tamaño del texto de "Venta de Lotes" */
     header h1 {
-        font-size: 1rem; /* Reducir tamaño del texto */
-        margin: 0; /* Eliminar márgenes innecesarios */
+        font-size: 1rem; /* Reducir tamaño de texto */
+        margin: 0;
     }
 
-    /* Ajustar el botón Contacto */
+    /* Ajustar el botón de contacto */
     .menu a {
-        font-size: 0.85rem; /* Reducir tamaño del texto */
+        font-size: 0.85rem; /* Reducir el tamaño del texto */
         padding: 8px 12px; /* Ajustar el padding */
-        margin-right: 0; /* Eliminar margen lateral */
+        margin-top: 10px; /* Añadir margen superior para separarlo */
         width: 100%; /* Hacer el botón más ancho */
         text-align: center; /* Centrar el texto */
-        margin-top: 10px; /* Espaciado superior */
+    }
+
+    /* Reorganizar la posición del texto y botón en el header */
+    .logo-container {
+        text-align: center;
+    }
+
+    /* Ajustar hero */
+    .hero {
+        margin-top: 20px; /* Separar del header */
+        text-align: center;
     }
 }
