@@ -1,35 +1,35 @@
 @media (max-width: 768px) {
     header {
-        flex-direction: column;
-        align-items: flex-start;
-        height: auto;
+        flex-wrap: wrap; /* Permitir que los elementos se ajusten en una fila */
+        height: auto; /* Permitir que el header se ajuste en altura */
         padding: 10px;
     }
 
     header .logo-container {
-        flex-direction: column;
-        align-items: flex-start;
+        flex: 1 1 auto; /* Permitir que la sección del logo crezca y se ajuste */
+        display: flex;
+        align-items: center;
     }
 
     header .logo {
-        max-height: 50px; /* Reduce el tamaño del logo en móviles */
-        margin-right: 0;
+        max-height: 50px; /* Reducir el tamaño del logo */
+        margin-right: 10px;
     }
 
     header h1 {
-        font-size: 1.2rem;
-        margin: 10px 0;
+        font-size: 1rem;
+        margin: 0;
+        white-space: nowrap; /* Evitar que el texto del título se corte en varias líneas */
     }
 
     .menu {
-        width: 100%;
-        text-align: center;
+        display: flex;
+        align-items: center;
     }
 
     .menu a {
-        display: inline-block;
-        font-size: 0.9rem;
-        margin: 5px 0;
-        padding: 10px 15px;
+        font-size: 0.8rem; /* Reducir el tamaño del texto */
+        padding: 8px 15px; /* Ajustar el espacio interno del botón */
+        margin-right: 5px;
     }
 }
