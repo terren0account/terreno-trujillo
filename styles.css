@@ -1,37 +1,31 @@
 @media (max-width: 768px) {
+    /* Ajustar el header */
     header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px;
-        height: auto;
+        flex-direction: column; /* Alinear en columna */
+        align-items: center; /* Centrar contenido */
+        height: auto; /* Ajustar altura automáticamente */
+        padding: 10px 15px;
     }
 
+    /* Reducir tamaño del logo */
     .logo {
-        max-height: 60px;
-        margin-right: 10px;
+        max-height: 40px; /* Reducir tamaño del logo */
+        margin-bottom: 10px; /* Espaciado inferior */
     }
 
+    /* Reducir tamaño del título */
     header h1 {
-        font-size: 1.2rem;
+        font-size: 1rem; /* Reducir tamaño del texto */
+        margin: 0; /* Eliminar márgenes innecesarios */
     }
 
+    /* Ajustar el botón Contacto */
     .menu a {
-        font-size: 0.9rem;
-        padding: 8px 15px;
-        margin-right: 0; /* Eliminar margen entre botones */
+        font-size: 0.85rem; /* Reducir tamaño del texto */
+        padding: 8px 12px; /* Ajustar el padding */
+        margin-right: 0; /* Eliminar margen lateral */
         width: 100%; /* Hacer el botón más ancho */
-        text-align: center;
-    }
-
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .cta-button {
-        padding: 12px 30px;
-        font-size: 1rem;
-        margin-top: 10px;
-        align-self: flex-start; /* Mover a la izquierda */
+        text-align: center; /* Centrar el texto */
+        margin-top: 10px; /* Espaciado superior */
     }
 }
-
