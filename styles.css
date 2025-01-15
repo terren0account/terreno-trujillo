@@ -1,35 +1,66 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-sizing: border-box; /* Asegura que el padding no rompa el diseño */
+    height: 70px; /* Mantiene una altura fija */
+}
+
+header .logo-container {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Evita que la sección del logo se reduzca */
+}
+
+header .logo {
+    height: 50px; /* Ajusta el tamaño del logo para que encaje en la fila */
+    width: auto;
+    margin-right: 10px; /* Espacio entre el logo y el texto */
+}
+
+header h1 {
+    font-size: 1.2rem; /* Ajusta el tamaño del texto en móviles */
+    margin: 0;
+    white-space: nowrap; /* Evita que el título se divida en varias líneas */
+}
+
+.menu {
+    display: flex;
+    flex-shrink: 0; /* Asegura que el menú no se reduzca demasiado */
+}
+
+.menu a {
+    font-size: 0.9rem; /* Ajusta el tamaño del texto en móviles */
+    padding: 8px 12px;
+    margin-left: 10px;
+    text-align: center;
+    white-space: nowrap; /* Evita que el botón se divida en líneas */
+    border-radius: 5px;
+    background-color: #ffd500;
+    transition: background 0.3s ease;
+}
+
+.menu a:hover {
+    background-color: #fff12c;
+}
+
 @media (max-width: 768px) {
     header {
-        flex-wrap: wrap; /* Permitir que los elementos se ajusten en una fila */
-        height: auto; /* Permitir que el header se ajuste en altura */
-        padding: 10px;
-    }
-
-    header .logo-container {
-        flex: 1 1 auto; /* Permitir que la sección del logo crezca y se ajuste */
-        display: flex;
-        align-items: center;
+        flex-wrap: nowrap; /* Impide que los elementos se apilen */
+        height: auto; /* Ajusta la altura si es necesario */
     }
 
     header .logo {
-        max-height: 50px; /* Reducir el tamaño del logo */
-        margin-right: 10px;
+        height: 40px; /* Reduce un poco el logo en móviles */
     }
 
     header h1 {
-        font-size: 1rem;
-        margin: 0;
-        white-space: nowrap; /* Evitar que el texto del título se corte en varias líneas */
-    }
-
-    .menu {
-        display: flex;
-        align-items: center;
+        font-size: 1rem; /* Ajusta el tamaño del título */
     }
 
     .menu a {
-        font-size: 0.8rem; /* Reducir el tamaño del texto */
-        padding: 8px 15px; /* Ajustar el espacio interno del botón */
-        margin-right: 5px;
+        font-size: 0.8rem; /* Reduce el tamaño del texto en el botón */
+        padding: 5px 10px;
     }
 }
