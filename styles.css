@@ -1,33 +1,38 @@
 header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: space-between; /* Espaciado uniforme entre elementos */
+    align-items: center; /* Centra verticalmente los elementos */
     padding: 10px 20px;
-    box-sizing: border-box; /* Asegura que el padding no rompa el diseño */
+    box-sizing: border-box;
+    width: 100%; /* Asegura que el header ocupe todo el ancho */
     height: 70px; /* Mantiene una altura fija */
+    flex-wrap: nowrap; /* Impide que los elementos se apilen */
+    overflow: hidden; /* Evita desbordamientos */
 }
 
 header .logo-container {
     display: flex;
     align-items: center;
-    flex-shrink: 0; /* Evita que la sección del logo se reduzca */
+    flex-shrink: 0; /* Evita que el contenedor del logo se reduzca */
 }
 
 header .logo {
-    height: 50px; /* Ajusta el tamaño del logo para que encaje en la fila */
+    height: 50px; /* Ajusta el tamaño del logo */
     width: auto;
     margin-right: 10px; /* Espacio entre el logo y el texto */
 }
 
 header h1 {
-    font-size: 1.2rem; /* Ajusta el tamaño del texto en móviles */
+    font-size: 1.2rem; /* Ajusta el tamaño del texto */
     margin: 0;
-    white-space: nowrap; /* Evita que el título se divida en varias líneas */
+    white-space: nowrap; /* Impide que el texto se divida en varias líneas */
+    flex-grow: 1; /* Permite que el título ocupe espacio flexible */
 }
 
 .menu {
     display: flex;
-    flex-shrink: 0; /* Asegura que el menú no se reduzca demasiado */
+    align-items: center;
+    flex-shrink: 0; /* Evita que el menú se reduzca demasiado */
 }
 
 .menu a {
@@ -47,20 +52,19 @@ header h1 {
 
 @media (max-width: 768px) {
     header {
-        flex-wrap: nowrap; /* Impide que los elementos se apilen */
-        height: auto; /* Ajusta la altura si es necesario */
+        padding: 10px; /* Ajusta el padding para pantallas más pequeñas */
     }
 
     header .logo {
-        height: 40px; /* Reduce un poco el logo en móviles */
+        height: 40px; /* Reduce el tamaño del logo en móviles */
     }
 
     header h1 {
-        font-size: 1rem; /* Ajusta el tamaño del título */
+        font-size: 1rem; /* Reduce el tamaño del texto del título */
     }
 
     .menu a {
-        font-size: 0.8rem; /* Reduce el tamaño del texto en el botón */
+        font-size: 0.8rem; /* Ajusta el tamaño del texto del botón */
         padding: 5px 10px;
     }
 }
