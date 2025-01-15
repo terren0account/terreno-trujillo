@@ -1,0 +1,35 @@
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 10px;
+    }
+
+    header .logo-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header .logo {
+        max-height: 50px; /* Reduce el tamaño del logo en móviles */
+        margin-right: 0;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+        margin: 10px 0;
+    }
+
+    .menu {
+        width: 100%;
+        text-align: center;
+    }
+
+    .menu a {
+        display: inline-block;
+        font-size: 0.9rem;
+        margin: 5px 0;
+        padding: 10px 15px;
+    }
+}
