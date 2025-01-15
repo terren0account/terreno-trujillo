@@ -9,10 +9,10 @@
     .logo-container {
         position: absolute;
         top: 20px; /* Ajusta para subir el logo */
-        right: 10px; /* Ajusta para mover el logo a la derecha */
+        left: 10px; /* Ajusta para mover el logo a la derecha */
 
     .logo {
-        width: 80px;
+        width: 230px;
         margin: 0; /* Elimina márgenes adicionales */
     }
 
