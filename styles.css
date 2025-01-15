@@ -1,46 +1,48 @@
 header {
     display: flex;
-    justify-content: space-between; /* Espaciado uniforme entre elementos */
-    align-items: center; /* Centra verticalmente los elementos */
-    padding: 10px 20px;
+    justify-content: space-between; /* Espaciado entre los elementos */
+    align-items: center; /* Centra los elementos verticalmente */
+    padding: 10px 15px; /* Reduce el padding para pantallas pequeñas */
     box-sizing: border-box;
     width: 100%; /* Asegura que el header ocupe todo el ancho */
-    height: 70px; /* Mantiene una altura fija */
-    flex-wrap: nowrap; /* Impide que los elementos se apilen */
-    overflow: hidden; /* Evita desbordamientos */
+    height: auto; /* Permite que el header ajuste su altura si es necesario */
+    background-color: #ffffff;
+    flex-wrap: nowrap; /* Previene el apilamiento de elementos */
 }
 
 header .logo-container {
     display: flex;
     align-items: center;
-    flex-shrink: 0; /* Evita que el contenedor del logo se reduzca */
+    flex-shrink: 1; /* Evita que se comprima demasiado en pantallas pequeñas */
+    max-width: 70%; /* Limita el espacio ocupado */
 }
 
 header .logo {
-    height: 50px; /* Ajusta el tamaño del logo */
+    height: 40px; /* Ajusta el tamaño del logo */
     width: auto;
     margin-right: 10px; /* Espacio entre el logo y el texto */
 }
 
 header h1 {
-    font-size: 1.2rem; /* Ajusta el tamaño del texto */
+    font-size: 1rem; /* Ajusta el tamaño del texto */
     margin: 0;
-    white-space: nowrap; /* Impide que el texto se divida en varias líneas */
-    flex-grow: 1; /* Permite que el título ocupe espacio flexible */
+    white-space: nowrap; /* Impide que el texto se divida en líneas */
+    overflow: hidden; /* Oculta el texto sobrante */
+    text-overflow: ellipsis; /* Agrega puntos suspensivos si el texto es demasiado largo */
 }
 
 .menu {
     display: flex;
     align-items: center;
-    flex-shrink: 0; /* Evita que el menú se reduzca demasiado */
+    flex-shrink: 0; /* Asegura que el botón no se comprima */
 }
 
 .menu a {
-    font-size: 0.9rem; /* Ajusta el tamaño del texto en móviles */
-    padding: 8px 12px;
+    font-size: 0.8rem; /* Ajusta el tamaño del texto en el botón */
+    padding: 8px 12px; /* Reduce el padding para pantallas pequeñas */
     margin-left: 10px;
     text-align: center;
-    white-space: nowrap; /* Evita que el botón se divida en líneas */
+    white-space: nowrap; /* Impide que el texto se divida en líneas */
     border-radius: 5px;
     background-color: #ffd500;
     transition: background 0.3s ease;
@@ -50,21 +52,26 @@ header h1 {
     background-color: #fff12c;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) { /* Ajustes para pantallas muy pequeñas */
     header {
-        padding: 10px; /* Ajusta el padding para pantallas más pequeñas */
+        padding: 8px 10px; /* Reduce el espacio en los laterales */
     }
 
-    header .logo {
-        height: 40px; /* Reduce el tamaño del logo en móviles */
+    header .logo-container {
+        max-width: 60%; /* Limita aún más el espacio del logo y texto */
     }
 
     header h1 {
-        font-size: 1rem; /* Reduce el tamaño del texto del título */
+        font-size: 0.9rem; /* Reduce el tamaño del texto */
+    }
+
+    header .logo {
+        height: 30px; /* Reduce el tamaño del logo */
     }
 
     .menu a {
-        font-size: 0.8rem; /* Ajusta el tamaño del texto del botón */
-        padding: 5px 10px;
+        font-size: 0.7rem; /* Reduce el tamaño del texto del botón */
+        padding: 6px 8px; /* Ajusta el padding */
+        margin-left: 5px; /* Reduce el margen entre el logo y el botón */
     }
 }
