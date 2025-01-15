@@ -7,7 +7,7 @@
     }
 
     .logo-container {
-        position: absolute;
+        position: left;
         top: 20px; /* Ajusta para subir el logo */
         left: 40px; /* Ajusta para mover el logo a la derecha */
 
