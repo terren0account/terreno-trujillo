@@ -2,7 +2,6 @@
 @media (max-width: 768px) {
     header {
         flex-direction: column;
-        align-items: center;
         padding: 20px;
         height: auto;
         text-align: center;
@@ -10,7 +9,7 @@
 
     .logo-container {
         position: absolute;
-        top: 10px; /* Ajusta para subir el logo */
+        top: 20px; /* Ajusta para subir el logo */
         right: 10px; /* Ajusta para mover el logo a la derecha */
 
     .logo {
