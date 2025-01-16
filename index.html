@@ -89,10 +89,10 @@
         }
 
         header .logo-container {
-            position: relative;
-            left: 1px; /* Mover el logo horizontalmente */
-            top: 15px;  /* Mover el logo verticalmente */
-        }
+        position: absolute; /* Desancla el logo del flujo normal */
+        left: 0; /* Lo mueve al borde izquierdo */
+        top: 0; /* Asegúrate de que no suba o baje innecesariamente */
+}
 
         header h1 {
             position: relative;
