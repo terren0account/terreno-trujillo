@@ -83,7 +83,29 @@
             font-size: 2.5rem;
             margin: 0;
         }
+        @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 10px;
+        }
 
+        header .logo-container {
+            position: relative;
+            left: 20px; /* Ajustar para móviles */
+            top: 0; /* Ajustar para móviles */
+        }
+
+        header .menu {
+            margin-top: 10px;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .menu a {
+            font-size: 0.8rem;
+            padding: 8px 10px;
+        }
         .cta-button {
             background-color: #4f46e5;
             color: white;
