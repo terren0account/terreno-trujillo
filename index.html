@@ -85,26 +85,30 @@
         }
         @media (max-width: 768px) {
         header {
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 10px;
+            height: auto; /* Ajustar la altura para dispositivos móviles */
         }
 
         header .logo-container {
             position: relative;
-            left: 20px; /* Ajustar para móviles */
-            top: 0; /* Ajustar para móviles */
+            left: 10px; /* Mover el logo horizontalmente */
+            top: 5px;  /* Mover el logo verticalmente */
+        }
+
+        header h1 {
+            position: relative;
+            left: 70px; /* Mover el texto horizontalmente */
+            top: -20px; /* Mover el texto verticalmente */
         }
 
         header .menu {
-            margin-top: 10px;
-            justify-content: flex-start;
-            width: 100%;
+            position: relative;
+            left: 150px; /* Mover el botón horizontalmente */
+            top: 10px;   /* Mover el botón verticalmente */
         }
 
         .menu a {
-            font-size: 0.8rem;
-            padding: 8px 10px;
+            font-size: 0.8rem; /* Reducir el tamaño del texto en móviles */
+            padding: 8px 10px; /* Ajustar el tamaño del botón */
         }
         .cta-button {
             background-color: #4f46e5;
