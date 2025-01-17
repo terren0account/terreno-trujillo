@@ -3,293 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Interactivo SVG</title>
+    <title>Venta de Terrenos</title>
     <style>
-        /* Estilo global */
         body {
-            font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
             color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden; /* Evitar desplazamiento no deseado */
+            line-height: 1.6;
         }
 
-        /* Contenedor principal */
-        .container {
+        header {
+            background-color: rgb(14, 184, 235);
+            color: rgb(0, 0, 0);
+            padding: 15px 5px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            width: 80%;
-            flex-wrap: wrap; /* Permitir que los elementos se ajusten en pantallas más pequeñas */
-        }
-
-        /* Contenedor del mapa */
-        #map-container {
-            width: 70%;
-            height: 600px;
-            overflow: hidden;
-            position: relative;
-            cursor: grab;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            background-color: #fff;
-            transition: all 0.3s ease-in-out;
-            touch-action: none; /* Permitir el desplazamiento táctil */
-        }
-
-        /* Imagen del mapa */
-        img {
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
             width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            height: 70px;
+        }
+
+        header .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        header .logo {
             height: 100%;
-            position: absolute;
+            max-height: 230px;
+            width: auto;
+            margin-right: 15px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .menu a {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #ffd500;
+            transition: background 0.3s ease;
+            margin-right: 15px;
+        }
+
+        .menu a:hover {
+            background-color: #fff12c;
+        }
+
+        .hero {
+            background-image: url('tru.avif');
+            background-size: cover;
+            background-position: center;
+            height: 670px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            margin-top: 70px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                height: 65px;
+            }
+
+            header .logo-container {
+                position: absolute;
+                left: -20px;
+                top: -65px;
+            }
+
+            header h1 {
+                position: absolute;
+                font-size: 1rem;
+                transform: translate(260px, 35px);
+                white-space: nowrap;
+            }
+
+            header .menu {
+                position: absolute;
+                right: 15px;
+                top: 30px;
+            }
+
+            .menu a {
+                font-size: 1.4rem;
+                padding: 8px 10px;
+            }
+        }
+
+        .cta-button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 30px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            animation: bounce 2s infinite;
+        }
+
+        .cta-button:hover {
+            background-color: #3b82f6;
+            transform: translateY(-3px);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
 
-        /* Panel de control */
-        .control-panel {
-            width: 25%;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            position: sticky;
-            top: 20px; /* Pegado al top */
-            height: 600px;
+        .gallery img:hover {
+            transform: scale(1.05);
         }
 
-        /* Título de panel */
-        .panel-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        /* Botones del panel */
-        .btn {
+        iframe {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
+            height: 315px;
             border: none;
-            border-radius: 5px;
-            transition: transform 0.2s ease, background-color 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: translateY(2px);
-        }
-
-        /* Botón de redirección */
-        .back-btn {
-            background-color: #3498db;
-            color: white;
-        }
-
-        /* Botón de reset */
-        .reset-btn {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        /* Barra deslizadora de zoom */
-        .zoom-slider-container {
-            width: 100%;
-            text-align: center;
-        }
-
-        .zoom-slider {
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .zoom-label {
-            font-size: 16px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        /* Texto informativo */
-        .info-text {
-            text-align: center;
-            font-size: 22px;
-            color: #333;
-            font-weight: 600;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Ajustes para pantallas móviles */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column; /* Cambiar a columna en dispositivos móviles */
-                width: 90%;
-            }
-
-            .control-panel {
-                width: 100%;
-                height: auto;
-                position: static;
-                margin-top: 20px;
-            }
-
-            #map-container {
-                width: 100%;
-                height: 400px;
-            }
-
-            .info-text {
-                font-size: 18px;
-                margin-top: 20px;
-            }
+        .map {
+            height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
+    <header>
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo de la Empresa" class="logo">
+            <h1>Venta de Lotes</h1>
+        </div>
+        <nav class="menu">
+            <a href="https://wa.me/1234567890" target="_blank">Contáctanos</a>
+        </nav>
+    </header>
 
-<div class="container">
-    <!-- Panel de control (a la derecha) -->
-    <div class="control-panel">
-        <div class="panel-title">Controles</div>
-        
-        <!-- Botón de redirección -->
-        <a href="index.html">
-            <button class="btn back-btn">Volver a la página principal</button>
-        </a>
+    <div class="hero">
+        <h1>Oportunidades que no se repiten</h1>
+        <p>Adquiere tu terreno ideal</p>
+        <a href="terreno.html" class="cta-button">Explorar Lotes</a>
+    </div>
 
-        <!-- Botón de reset -->
-        <button class="btn reset-btn" id="reset-btn">Resetear</button>
+    <div class="container">
+        <div class="section" id="galeria">
+            <h2>Galería</h2>
+            <div class="gallery">
+                <img src="trujillo.png" alt="Terreno 1">
+                <img src="tru123.png" alt="Terreno 2">
+                <img src="trujillo.png" alt="Terreno 3">
+                <img src="tru123.png" alt="Terreno 4">
+            </div>
+        </div>
 
-        <!-- Barra deslizadora de zoom -->
-        <div class="zoom-slider-container">
-            <label for="zoom-slider" class="zoom-label">Ajustar Zoom</label>
-            <input type="range" id="zoom-slider" class="zoom-slider" min="0.5" max="10" step="0.1" value="1">
+        <div class="section" id="video">
+            <h2>Video Promocional</h2>
+            <iframe src="https://www.youtube.com/embed/N6No3HZPhjo" allowfullscreen title="Video Promocional"></iframe>
+        </div>
+
+        <div class="section" id="ubicacion">
+            <h2>Ubicación</h2>
+            <div id="map" class="map"></div>
         </div>
     </div>
 
-    <!-- Contenedor del mapa -->
-    <div id="map-container">
-        <!-- Usamos <img> para cargar el archivo SVG -->
-        <img id="map" src="mapa.svg" alt="Mapa SVG">
-    </div>
-</div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([-7.946638, -79.069137], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-<!-- Texto informativo -->
-<div class="info-text">
-    Elige tu lote y llama ya
-</div>
-
-<script>
-    const mapContainer = document.getElementById('map-container');
-    const map = document.getElementById('map');
-    const resetBtn = document.getElementById('reset-btn');
-    const zoomSlider = document.getElementById('zoom-slider');
-
-    let scale = 1;
-    let startX, startY, isDragging = false;
-    let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
-
-    // Función para manejar el movimiento táctil
-    const handleTouchStart = (e) => {
-        e.preventDefault();
-        isDragging = true;
-        startX = e.touches[0].pageX - offsetX;
-        startY = e.touches[0].pageY - offsetY;
-        mapContainer.style.cursor = 'grabbing';
-    };
-
-    const handleTouchMove = (e) => {
-        if (isDragging) {
-            const dx = e.touches[0].pageX - startX;
-            const dy = e.touches[0].pageY - startY;
-            offsetX = dx;
-            offsetY = dy;
-            map.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-        }
-    };
-
-    const handleTouchEnd = () => {
-        isDragging = false;
-        mapContainer.style.cursor = 'grab';
-    };
-
-    // Habilitar el arrastre con el mouse
-    mapContainer.addEventListener('click', (e) => {
-        if (!isDragging) {
-            // Iniciar el movimiento
-            isDragging = true;
-            startX = e.pageX - offsetX;
-            startY = e.pageY - offsetY;
-            mapContainer.style.cursor = 'grabbing';
-        } else {
-            // Detener el movimiento
-            isDragging = false;
-            mapContainer.style.cursor = 'grab';
-        }
-    });
-
-    mapContainer.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            const dx = e.pageX - startX;
-            const dy = e.pageY - startY;
-            offsetX = dx;
-            offsetY = dy;
-            map.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-        }
-    });
-
-    // Habilitar el zoom con la rueda del mouse
-    mapContainer.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        if (e.deltaY < 0) {
-            scale += 0.1;
-        } else {
-            scale = Math.max(0.5, scale - 0.1);
-        }
-        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-        zoomSlider.value = scale; // Sincronizar la barra de zoom
-    });
-
-    // Sincronizar el valor de la barra de zoom con la escala
-    zoomSlider.addEventListener('input', (e) => {
-        scale = parseFloat(e.target.value);
-        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-    });
-
-    // Resetear el mapa a su posición y escala original
-    resetBtn.addEventListener('click', () => {
-        scale = 1;
-        offsetX = 0;
-        offsetY = 0;
-        map.style.transform = `translate(0px, 0px) scale(1)`;
-        zoomSlider.value = 1; // Resetear la barra de zoom
-    });
-
-    // Agregar soporte táctil
-    mapContainer.addEventListener('touchstart', handleTouchStart);
-    mapContainer.addEventListener('touchmove', handleTouchMove);
-    mapContainer.addEventListener('touchend', handleTouchEnd);
-</script>
-
+        L.marker([-7.946638, -79.069137]).addTo(map)
+            .bindPopup('Terreno en Chicama. Ideal para tu proyecto.')
+            .openPopup();
+    </script>
 </body>
 </html>
