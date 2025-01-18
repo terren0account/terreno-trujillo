@@ -204,73 +204,59 @@
     const zoomSlider = document.getElementById('zoom-slider');
 
     let scale = 1;
-    let startX = 0, startY = 0;
     let offsetX = 0, offsetY = 0; // Posición acumulada del mapa
-    let isDragging = false; // Indica si se está moviendo
+    let startX = 0, startY = 0; // Posición inicial del movimiento
     let isDragModeActive = false; // Indica si está habilitado el modo de arrastre
-    let initialDistance = null;
+    let isDragging = false; // Indica si se está moviendo
 
-    // Alternar el modo de arrastre al hacer click o tap en el mapa
-    mapContainer.addEventListener('click', toggleDragMode);
-    mapContainer.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 1) toggleDragMode();
+    // Alternar el modo de arrastre al hacer click o tap
+    mapContainer.addEventListener('click', () => {
+        isDragModeActive = !isDragModeActive;
+        mapContainer.style.cursor = isDragModeActive ? "move" : "default";
     });
 
-    function toggleDragMode() {
-        isDragModeActive = !isDragModeActive;
-        mapContainer.style.cursor = isDragModeActive ? "grab" : "default";
-    }
-
-    // Inicia el arrastre solo si el modo de arrastre está activo
-    function startDragging(e) {
-        if (!isDragModeActive) return;
+    // Inicia el movimiento
+    mapContainer.addEventListener('mousedown', (e) => {
+        if (!isDragModeActive) return; // Solo si el modo de arrastre está activo
         isDragging = true;
-        mapContainer.style.cursor = "grabbing";
-        if (e.type === "mousedown") {
-            startX = e.pageX - offsetX;
-            startY = e.pageY - offsetY;
-        } else if (e.touches && e.touches.length === 1) {
-            startX = e.touches[0].pageX - offsetX;
-            startY = e.touches[0].pageY - offsetY;
-        } else if (e.touches && e.touches.length === 2) {
-            initialDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-        }
-    }
+        startX = e.pageX - offsetX;
+        startY = e.pageY - offsetY;
+    });
 
     // Realiza el movimiento mientras se arrastra
-    function dragMap(e) {
-        if (!isDragging) return;
-        e.preventDefault();
-        if (e.type === "mousemove") {
-            offsetX = e.pageX - startX;
-            offsetY = e.pageY - startY;
-        } else if (e.touches && e.touches.length === 1) {
-            offsetX = e.touches[0].pageX - startX;
-            offsetY = e.touches[0].pageY - startY;
-        } else if (e.touches && e.touches.length === 2) {
-            const currentDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-            if (initialDistance) {
-                const zoomFactor = currentDistance / initialDistance;
-                scale = Math.min(10, Math.max(0.5, scale * zoomFactor));
-                zoomSlider.value = scale;
-                initialDistance = currentDistance;
-            }
-        }
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging || !isDragModeActive) return;
+        offsetX = e.pageX - startX;
+        offsetY = e.pageY - startY;
         map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-    }
+    });
 
-    // Detiene el arrastre
-    function stopDragging() {
+    // Finaliza el movimiento
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+        }
+    });
+
+    // Soporte para dispositivos móviles (touchstart y touchmove)
+    mapContainer.addEventListener('touchstart', (e) => {
+        if (!isDragModeActive || e.touches.length !== 1) return; // Solo si el modo de arrastre está activo y con un solo dedo
+        isDragging = true;
+        startX = e.touches[0].pageX - offsetX;
+        startY = e.touches[0].pageY - offsetY;
+    });
+
+    mapContainer.addEventListener('touchmove', (e) => {
+        if (!isDragging || !isDragModeActive || e.touches.length !== 1) return;
+        e.preventDefault(); // Evita el scroll de la página
+        offsetX = e.touches[0].pageX - startX;
+        offsetY = e.touches[0].pageY - startY;
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    });
+
+    mapContainer.addEventListener('touchend', () => {
         isDragging = false;
-        initialDistance = null;
-        if (isDragModeActive) mapContainer.style.cursor = "grab";
-    }
+    });
 
     // Sincronizar zoom con la barra deslizadora
     zoomSlider.addEventListener('input', (e) => {
@@ -288,16 +274,6 @@
         zoomSlider.value = 1;
         mapContainer.style.cursor = "default";
     });
-
-    // Eventos táctiles
-    mapContainer.addEventListener('touchstart', startDragging);
-    mapContainer.addEventListener('touchmove', dragMap);
-    mapContainer.addEventListener('touchend', stopDragging);
-
-    // Eventos de ratón
-    mapContainer.addEventListener('mousedown', startDragging);
-    window.addEventListener('mousemove', dragMap);
-    window.addEventListener('mouseup', stopDragging);
 </script>
 
 
