@@ -16,6 +16,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden; /* Evita el scroll de la página */
         }
 
         /* Contenedor principal */
@@ -38,7 +39,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             background-color: #fff;
-            transition: all 0.3s ease-in-out;
+            touch-action: none; /* Desactiva el comportamiento predeterminado de gestos */
         }
 
         /* Imagen del mapa */
@@ -204,59 +205,66 @@
     const zoomSlider = document.getElementById('zoom-slider');
 
     let scale = 1;
-    let startX, startY, isDragging = false;
+    let startX = 0, startY = 0, isDragging = false;
     let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
+    let initialDistance = null;
 
-    // Activar y desactivar el arrastre al hacer clic
-    mapContainer.addEventListener('click', (e) => {
-        if (!isDragging) {
-            // Iniciar el movimiento
+    // Detectar inicio del movimiento
+    mapContainer.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
             isDragging = true;
-            startX = e.pageX - offsetX;
-            startY = e.pageY - offsetY;
-            mapContainer.style.cursor = 'grabbing';
-        } else {
-            // Detener el movimiento
+            startX = e.touches[0].pageX - offsetX;
+            startY = e.touches[0].pageY - offsetY;
+        } else if (e.touches.length === 2) {
             isDragging = false;
-            mapContainer.style.cursor = 'grab';
+            initialDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
         }
     });
 
-    mapContainer.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            const dx = e.pageX - startX;
-            const dy = e.pageY - startY;
-            offsetX = dx;
-            offsetY = dy;
-            map.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-        }
-    });
-
-    // Habilitar el zoom con la rueda del mouse
-    mapContainer.addEventListener('wheel', (e) => {
+    // Detectar movimiento táctil
+    mapContainer.addEventListener('touchmove', (e) => {
         e.preventDefault();
-        if (e.deltaY < 0) {
-            scale += 0.1;
-        } else {
-            scale = Math.max(0.5, scale - 0.1);
+        if (e.touches.length === 1 && isDragging) {
+            offsetX = e.touches[0].pageX - startX;
+            offsetY = e.touches[0].pageY - startY;
+            map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        } else if (e.touches.length === 2) {
+            const currentDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            if (initialDistance) {
+                const zoomFactor = currentDistance / initialDistance;
+                scale = Math.min(10, Math.max(0.5, scale * zoomFactor));
+                map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+                zoomSlider.value = scale;
+                initialDistance = currentDistance;
+            }
         }
-        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-        zoomSlider.value = scale; // Sincronizar la barra de zoom
     });
 
-    // Sincronizar el valor de la barra de zoom con la escala
+    // Finalizar el movimiento
+    mapContainer.addEventListener('touchend', () => {
+        isDragging = false;
+        initialDistance = null;
+    });
+
+    // Sincronizar zoom con la barra deslizadora
     zoomSlider.addEventListener('input', (e) => {
         scale = parseFloat(e.target.value);
         map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     });
 
-    // Resetear el mapa a su posición y escala original
+    // Resetear el mapa
     resetBtn.addEventListener('click', () => {
         scale = 1;
         offsetX = 0;
         offsetY = 0;
         map.style.transform = `translate(0px, 0px) scale(1)`;
-        zoomSlider.value = 1; // Resetear la barra de zoom
+        zoomSlider.value = 1;
     });
 </script>
 
