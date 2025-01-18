@@ -206,24 +206,24 @@
     let scale = 1;
     let offsetX = 0, offsetY = 0; // Posición acumulada del mapa
     let startX = 0, startY = 0; // Posición inicial del movimiento
-    let isDragModeActive = false; // Indica si está habilitado el modo de arrastre
-    let isDragging = false; // Indica si se está moviendo
+    let isDragModeActive = false; // Indica si el modo de movimiento está activo
+    let isDragging = false; // Indica si se está arrastrando el mapa
 
-    // Alternar el modo de arrastre al hacer click o tap
+    // Alternar el modo de movimiento con un click
     mapContainer.addEventListener('click', () => {
         isDragModeActive = !isDragModeActive;
         mapContainer.style.cursor = isDragModeActive ? "move" : "default";
     });
 
-    // Inicia el movimiento
+    // Iniciar el arrastre
     mapContainer.addEventListener('mousedown', (e) => {
-        if (!isDragModeActive) return; // Solo si el modo de arrastre está activo
+        if (!isDragModeActive) return;
         isDragging = true;
         startX = e.pageX - offsetX;
         startY = e.pageY - offsetY;
     });
 
-    // Realiza el movimiento mientras se arrastra
+    // Arrastrar el mapa
     window.addEventListener('mousemove', (e) => {
         if (!isDragging || !isDragModeActive) return;
         offsetX = e.pageX - startX;
@@ -231,16 +231,15 @@
         map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     });
 
-    // Finaliza el movimiento
+    // Finalizar el arrastre
     window.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-        }
+        isDragging = false;
     });
 
-    // Soporte para dispositivos móviles (touchstart y touchmove)
+    // Soporte para dispositivos móviles: Tap para activar/desactivar y movimiento
     mapContainer.addEventListener('touchstart', (e) => {
-        if (!isDragModeActive || e.touches.length !== 1) return; // Solo si el modo de arrastre está activo y con un solo dedo
+        if (e.touches.length !== 1) return; // Ignorar si no es un solo dedo
+        if (!isDragModeActive) return;
         isDragging = true;
         startX = e.touches[0].pageX - offsetX;
         startY = e.touches[0].pageY - offsetY;
