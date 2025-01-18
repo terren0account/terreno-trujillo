@@ -207,9 +207,29 @@
     let scale = 1;
     let startX = 0, startY = 0, isDragging = false;
     let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
+    let isMouseDragging = false; // Para clic y movimiento en PC
     let initialDistance = null;
 
-    // Detectar inicio del movimiento en dispositivos táctiles
+    // Detectar clic para alternar movimiento en PC
+    mapContainer.addEventListener('click', (e) => {
+        isMouseDragging = !isMouseDragging; // Cambiar estado con cada clic
+        mapContainer.style.cursor = isMouseDragging ? "grabbing" : "grab"; // Cambiar cursor según el estado
+        if (isMouseDragging) {
+            startX = e.pageX - offsetX;
+            startY = e.pageY - offsetY;
+        }
+    });
+
+    // Detectar movimiento del mouse mientras está en modo arrastre
+    mapContainer.addEventListener('mousemove', (e) => {
+        if (isMouseDragging) {
+            offsetX = e.pageX - startX;
+            offsetY = e.pageY - startY;
+            map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        }
+    });
+
+    // Detectar inicio del movimiento táctil
     mapContainer.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
             isDragging = true;
@@ -246,46 +266,26 @@
         }
     });
 
-    // Finalizar el movimiento en dispositivos táctiles
+    // Finalizar el movimiento táctil
     mapContainer.addEventListener('touchend', () => {
         isDragging = false;
         initialDistance = null;
     });
 
-    // Sincronizar zoom con la barra deslizadora
+    // Zoom con la barra deslizadora
     zoomSlider.addEventListener('input', (e) => {
         scale = parseFloat(e.target.value);
         map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     });
 
-    // Función para mover el mapa con clic en PC
-    let isClickDragging = false;
-
-    mapContainer.addEventListener('mousedown', (e) => {
-        if (!isClickDragging) {
-            isClickDragging = true;
-            startX = e.pageX - offsetX;
-            startY = e.pageY - offsetY;
-
-            // Detectar movimiento del mouse mientras se arrastra
-            const onMouseMove = (e) => {
-                if (isClickDragging) {
-                    offsetX = e.pageX - startX;
-                    offsetY = e.pageY - startY;
-                    map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-                }
-            };
-
-            // Dejar de arrastrar al hacer clic nuevamente
-            const onMouseUp = () => {
-                isClickDragging = false;
-                mapContainer.removeEventListener('mousemove', onMouseMove);
-                mapContainer.removeEventListener('mouseup', onMouseUp);
-            };
-
-            mapContainer.addEventListener('mousemove', onMouseMove);
-            mapContainer.addEventListener('mouseup', onMouseUp);
-        }
+    // Zoom con la rueda del mouse
+    mapContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoomSpeed = 0.1;
+        scale += e.deltaY < 0 ? zoomSpeed : -zoomSpeed;
+        scale = Math.min(10, Math.max(0.5, scale));
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        zoomSlider.value = scale;
     });
 
     // Resetear el mapa
@@ -295,8 +295,11 @@
         offsetY = 0;
         map.style.transform = `translate(0px, 0px) scale(1)`;
         zoomSlider.value = 1;
+        isMouseDragging = false;
+        mapContainer.style.cursor = "grab";
     });
 </script>
+
 
 
 
