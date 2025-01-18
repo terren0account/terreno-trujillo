@@ -209,29 +209,36 @@
     let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
     let initialDistance = null;
 
-    // Detectar inicio del movimiento
-    mapContainer.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 1) {
-            isDragging = true;
-            startX = e.touches[0].pageX - offsetX;
-            startY = e.touches[0].pageY - offsetY;
-        } else if (e.touches.length === 2) {
-            isDragging = false;
-            initialDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
+    // Función para iniciar el movimiento
+    function startDragging(e) {
+        isDragging = true;
+        if (e.type === "mousedown") {
+            startX = e.pageX - offsetX;
+            startY = e.pageY - offsetY;
+        } else if (e.touches) {
+            if (e.touches.length === 1) {
+                startX = e.touches[0].pageX - offsetX;
+                startY = e.touches[0].pageY - offsetY;
+            } else if (e.touches.length === 2) {
+                initialDistance = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+            }
         }
-    });
+    }
 
-    // Detectar movimiento táctil
-    mapContainer.addEventListener('touchmove', (e) => {
+    // Función para mover el mapa
+    function dragMap(e) {
+        if (!isDragging) return;
         e.preventDefault();
-        if (e.touches.length === 1 && isDragging) {
+        if (e.type === "mousemove") {
+            offsetX = e.pageX - startX;
+            offsetY = e.pageY - startY;
+        } else if (e.touches && e.touches.length === 1) {
             offsetX = e.touches[0].pageX - startX;
             offsetY = e.touches[0].pageY - startY;
-            map.style.transform = translate(${offsetX}px, ${offsetY}px) scale(${scale});
-        } else if (e.touches.length === 2) {
+        } else if (e.touches && e.touches.length === 2) {
             const currentDistance = Math.hypot(
                 e.touches[0].pageX - e.touches[1].pageX,
                 e.touches[0].pageY - e.touches[1].pageY
@@ -239,23 +246,23 @@
             if (initialDistance) {
                 const zoomFactor = currentDistance / initialDistance;
                 scale = Math.min(10, Math.max(0.5, scale * zoomFactor));
-                map.style.transform = translate(${offsetX}px, ${offsetY}px) scale(${scale});
                 zoomSlider.value = scale;
                 initialDistance = currentDistance;
             }
         }
-    });
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    }
 
-    // Finalizar el movimiento
-    mapContainer.addEventListener('touchend', () => {
+    // Función para finalizar el movimiento
+    function stopDragging() {
         isDragging = false;
         initialDistance = null;
-    });
+    }
 
     // Sincronizar zoom con la barra deslizadora
     zoomSlider.addEventListener('input', (e) => {
         scale = parseFloat(e.target.value);
-        map.style.transform = translate(${offsetX}px, ${offsetY}px) scale(${scale});
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     });
 
     // Resetear el mapa
@@ -263,10 +270,21 @@
         scale = 1;
         offsetX = 0;
         offsetY = 0;
-        map.style.transform = translate(0px, 0px) scale(1);
+        map.style.transform = `translate(0px, 0px) scale(1)`;
         zoomSlider.value = 1;
     });
+
+    // Eventos táctiles
+    mapContainer.addEventListener('touchstart', startDragging);
+    mapContainer.addEventListener('touchmove', dragMap);
+    mapContainer.addEventListener('touchend', stopDragging);
+
+    // Eventos de ratón
+    mapContainer.addEventListener('mousedown', startDragging);
+    window.addEventListener('mousemove', dragMap);
+    window.addEventListener('mouseup', stopDragging);
 </script>
+
 
 </body>
 </html>
