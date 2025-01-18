@@ -197,7 +197,6 @@
 <div class="info-text">
     Elige tu lote y llama ya
 </div>
-
 <script>
     const mapContainer = document.getElementById('map-container');
     const map = document.getElementById('map');
@@ -205,30 +204,43 @@
     const zoomSlider = document.getElementById('zoom-slider');
 
     let scale = 1;
-    let startX = 0, startY = 0, isDragging = false;
-    let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
+    let startX = 0, startY = 0;
+    let offsetX = 0, offsetY = 0; // Posición acumulada del mapa
+    let isDragging = false; // Indica si se está moviendo
+    let isDragModeActive = false; // Indica si está habilitado el modo de arrastre
     let initialDistance = null;
 
-    // Función para iniciar el movimiento
+    // Alternar el modo de arrastre al hacer click o tap en el mapa
+    mapContainer.addEventListener('click', toggleDragMode);
+    mapContainer.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) toggleDragMode();
+    });
+
+    function toggleDragMode() {
+        isDragModeActive = !isDragModeActive;
+        mapContainer.style.cursor = isDragModeActive ? "grab" : "default";
+    }
+
+    // Inicia el arrastre solo si el modo de arrastre está activo
     function startDragging(e) {
+        if (!isDragModeActive) return;
         isDragging = true;
+        mapContainer.style.cursor = "grabbing";
         if (e.type === "mousedown") {
             startX = e.pageX - offsetX;
             startY = e.pageY - offsetY;
-        } else if (e.touches) {
-            if (e.touches.length === 1) {
-                startX = e.touches[0].pageX - offsetX;
-                startY = e.touches[0].pageY - offsetY;
-            } else if (e.touches.length === 2) {
-                initialDistance = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-            }
+        } else if (e.touches && e.touches.length === 1) {
+            startX = e.touches[0].pageX - offsetX;
+            startY = e.touches[0].pageY - offsetY;
+        } else if (e.touches && e.touches.length === 2) {
+            initialDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
         }
     }
 
-    // Función para mover el mapa
+    // Realiza el movimiento mientras se arrastra
     function dragMap(e) {
         if (!isDragging) return;
         e.preventDefault();
@@ -253,10 +265,11 @@
         map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     }
 
-    // Función para finalizar el movimiento
+    // Detiene el arrastre
     function stopDragging() {
         isDragging = false;
         initialDistance = null;
+        if (isDragModeActive) mapContainer.style.cursor = "grab";
     }
 
     // Sincronizar zoom con la barra deslizadora
@@ -270,8 +283,10 @@
         scale = 1;
         offsetX = 0;
         offsetY = 0;
+        isDragModeActive = false; // Desactivar el modo de arrastre al resetear
         map.style.transform = `translate(0px, 0px) scale(1)`;
         zoomSlider.value = 1;
+        mapContainer.style.cursor = "default";
     });
 
     // Eventos táctiles
