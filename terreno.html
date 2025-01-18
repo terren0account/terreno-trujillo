@@ -209,7 +209,7 @@
     let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
     let initialDistance = null;
 
-    // Detectar inicio del movimiento
+    // Detectar inicio del movimiento en dispositivos táctiles
     mapContainer.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
             isDragging = true;
@@ -246,7 +246,7 @@
         }
     });
 
-    // Finalizar el movimiento
+    // Finalizar el movimiento en dispositivos táctiles
     mapContainer.addEventListener('touchend', () => {
         isDragging = false;
         initialDistance = null;
@@ -258,6 +258,36 @@
         map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     });
 
+    // Función para mover el mapa con clic en PC
+    let isClickDragging = false;
+
+    mapContainer.addEventListener('mousedown', (e) => {
+        if (!isClickDragging) {
+            isClickDragging = true;
+            startX = e.pageX - offsetX;
+            startY = e.pageY - offsetY;
+
+            // Detectar movimiento del mouse mientras se arrastra
+            const onMouseMove = (e) => {
+                if (isClickDragging) {
+                    offsetX = e.pageX - startX;
+                    offsetY = e.pageY - startY;
+                    map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+                }
+            };
+
+            // Dejar de arrastrar al hacer clic nuevamente
+            const onMouseUp = () => {
+                isClickDragging = false;
+                mapContainer.removeEventListener('mousemove', onMouseMove);
+                mapContainer.removeEventListener('mouseup', onMouseUp);
+            };
+
+            mapContainer.addEventListener('mousemove', onMouseMove);
+            mapContainer.addEventListener('mouseup', onMouseUp);
+        }
+    });
+
     // Resetear el mapa
     resetBtn.addEventListener('click', () => {
         scale = 1;
@@ -267,6 +297,7 @@
         zoomSlider.value = 1;
     });
 </script>
+
 
 </body>
 </html>
