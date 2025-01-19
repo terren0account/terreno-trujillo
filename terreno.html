@@ -208,8 +208,9 @@
     let startX = 0, startY = 0, isDragging = false;
     let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
     let initialDistance = null;
+    let isPCDragging = false; // Controlar si se está arrastrando en PC
 
-    // Detectar inicio del movimiento
+    // Detectar inicio del movimiento táctil
     mapContainer.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
             isDragging = true;
@@ -246,10 +247,35 @@
         }
     });
 
-    // Finalizar el movimiento
+    // Finalizar el movimiento táctil
     mapContainer.addEventListener('touchend', () => {
         isDragging = false;
         initialDistance = null;
+    });
+
+    // Función para iniciar y detener el arrastre en PC
+    mapContainer.addEventListener('mousedown', (e) => {
+        if (!isPCDragging) {
+            isPCDragging = true;
+            startX = e.pageX - offsetX;
+            startY = e.pageY - offsetY;
+        } else {
+            isPCDragging = false;
+        }
+    });
+
+    // Detectar movimiento del ratón
+    mapContainer.addEventListener('mousemove', (e) => {
+        if (isPCDragging) {
+            offsetX = e.pageX - startX;
+            offsetY = e.pageY - startY;
+            map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        }
+    });
+
+    // Finalizar el arrastre en PC al soltar el botón
+    mapContainer.addEventListener('mouseup', () => {
+        isPCDragging = false;
     });
 
     // Sincronizar zoom con la barra deslizadora
@@ -267,6 +293,7 @@
         zoomSlider.value = 1;
     });
 </script>
+
 
 </body>
 </html>
