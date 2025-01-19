@@ -204,11 +204,61 @@
     const resetBtn = document.getElementById('reset-btn');
     const zoomSlider = document.getElementById('zoom-slider');
 
-    let scale = 1;
-    let startX = 0, startY = 0, isDragging = false;
-    let offsetX = 0, offsetY = 0; // Mantener el desplazamiento
-    let initialDistance = null;
-    let isPCDragging = false; // Controlar si se está arrastrando en PC
+    let scale = 1; // Nivel de zoom
+    let startX = 0, startY = 0; // Coordenadas iniciales al empezar el movimiento
+    let offsetX = 0, offsetY = 0; // Desplazamiento acumulado
+    let isDragging = false; // Controlar si se está arrastrando
+    let initialDistance = null; // Para gestos táctiles de zoom
+    let isMouseDragging = false; // Control para arrastre con mouse en PC
+
+    // === MOVIMIENTO Y ZOOM EN PC ===
+
+    // Detectar inicio del arrastre con mouse
+    mapContainer.addEventListener('mousedown', (e) => {
+        isMouseDragging = true;
+        startX = e.pageX - offsetX; // Guardar la posición inicial X
+        startY = e.pageY - offsetY; // Guardar la posición inicial Y
+        mapContainer.style.cursor = "grabbing"; // Cambiar cursor al arrastrar
+    });
+
+    // Detectar movimiento del mouse
+    mapContainer.addEventListener('mousemove', (e) => {
+        if (isMouseDragging) {
+            offsetX = e.pageX - startX; // Calcular desplazamiento en X
+            offsetY = e.pageY - startY; // Calcular desplazamiento en Y
+            map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`; // Aplicar transformaciones
+        }
+    });
+
+    // Detectar final del arrastre con mouse
+    mapContainer.addEventListener('mouseup', () => {
+        isMouseDragging = false; // Detener el arrastre
+        mapContainer.style.cursor = "grab"; // Cambiar cursor a "grab"
+    });
+
+    // Detectar salida del mouse del contenedor (para soltar si ocurre fuera del área)
+    mapContainer.addEventListener('mouseleave', () => {
+        isMouseDragging = false; // Detener el arrastre
+        mapContainer.style.cursor = "grab"; // Cambiar cursor a "grab"
+    });
+
+    // Detectar zoom con la rueda del mouse
+    mapContainer.addEventListener('wheel', (e) => {
+        e.preventDefault(); // Prevenir el comportamiento predeterminado
+        const zoomStep = 0.1; // Incremento/decremento del zoom
+
+        // Ajustar el nivel de zoom
+        if (e.deltaY < 0) {
+            scale = Math.min(scale + zoomStep, 10); // Zoom in
+        } else {
+            scale = Math.max(scale - zoomStep, 0.5); // Zoom out
+        }
+
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`; // Aplicar el nuevo zoom
+        zoomSlider.value = scale; // Sincronizar el slider con el zoom
+    });
+
+    // === MOVIMIENTO Y ZOOM EN CELULAR ===
 
     // Detectar inicio del movimiento táctil
     mapContainer.addEventListener('touchstart', (e) => {
@@ -253,47 +303,23 @@
         initialDistance = null;
     });
 
-    // Función para iniciar y detener el arrastre en PC
-    mapContainer.addEventListener('mousedown', (e) => {
-        if (!isPCDragging) {
-            isPCDragging = true;
-            startX = e.pageX - offsetX;
-            startY = e.pageY - offsetY;
-        } else {
-            isPCDragging = false;
-        }
-    });
+    // === ZOOM DESDE LA BARRA DESLIZADORA ===
 
-    // Detectar movimiento del ratón
-    mapContainer.addEventListener('mousemove', (e) => {
-        if (isPCDragging) {
-            offsetX = e.pageX - startX;
-            offsetY = e.pageY - startY;
-            map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-        }
-    });
-
-    // Finalizar el arrastre en PC al soltar el botón
-    mapContainer.addEventListener('mouseup', () => {
-        isPCDragging = false;
-    });
-
-    // Sincronizar zoom con la barra deslizadora
     zoomSlider.addEventListener('input', (e) => {
-        scale = parseFloat(e.target.value);
-        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        scale = parseFloat(e.target.value); // Obtener el valor del slider
+        map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`; // Aplicar el zoom
     });
 
-    // Resetear el mapa
+    // === RESET DEL MAPA ===
+
     resetBtn.addEventListener('click', () => {
-        scale = 1;
-        offsetX = 0;
-        offsetY = 0;
-        map.style.transform = `translate(0px, 0px) scale(1)`;
-        zoomSlider.value = 1;
+        scale = 1; // Restablecer el zoom
+        offsetX = 0; // Restablecer el desplazamiento en X
+        offsetY = 0; // Restablecer el desplazamiento en Y
+        map.style.transform = `translate(0px, 0px) scale(1)`; // Restablecer transformaciones
+        zoomSlider.value = 1; // Sincronizar el slider
     });
 </script>
-
 
 </body>
 </html>
